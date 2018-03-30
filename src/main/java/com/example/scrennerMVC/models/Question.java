@@ -15,15 +15,15 @@ public class Question {
 
     private String question2;
 
-    private int answer1;
-
-    private int answer2;
+//    private int answer1;
+//
+//    private int answer2;
 
     private int desiredAnswer1;
 
     private int desiredAnswer2;
 
-    private int matchingAnswer;
+//    private int matchingAnswer;
 
     private Boolean matchingOpposite;
 
@@ -64,21 +64,21 @@ public class Question {
         this.question2 = question2;
     }
 
-    public int getAnswer1() {
-        return answer1;
-    }
-
-    public void setAnswer1(int answer1) {
-        this.answer1 = answer1;
-    }
-
-    public int getAnswer2() {
-        return answer2;
-    }
-
-    public void setAnswer2(int answer2) {
-        this.answer2 = answer2;
-    }
+//    public int getAnswer1() {
+//        return answer1;
+//    }
+//
+//    public void setAnswer1(int answer1) {
+//        this.answer1 = answer1;
+//    }
+//
+//    public int getAnswer2() {
+//        return answer2;
+//    }
+//
+//    public void setAnswer2(int answer2) {
+//        this.answer2 = answer2;
+//    }
 
     public int getDesiredAnswer1() {
         return desiredAnswer1;
@@ -96,13 +96,13 @@ public class Question {
         this.desiredAnswer2 = desiredAnswer2;
     }
 
-    public int getMatchingAnswer() {
-        return matchingAnswer;
-    }
-
-    public void setMatchingAnswer(int matchingAnswer) {
-        this.matchingAnswer = matchingAnswer;
-    }
+//    public int getMatchingAnswer() {
+//        return matchingAnswer;
+//    }
+//
+//    public void setMatchingAnswer(int matchingAnswer) {
+//        this.matchingAnswer = matchingAnswer;
+//    }
 
     public Boolean getMatchingOpposite() {
         return matchingOpposite;
