@@ -21,45 +21,50 @@
             <input class="form-control" th:field="*{question2}" />
             <span th:errors="*{question2}" class="error"></span>
         </div>
+
         <div>
             <br></br>
             <label th:for="desiredAnswer1">Desired Answer 1</label>
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer1}" th:value="1" /> Always True
+            <input type="radio" th:field="*{{desiredAnswer1}}" th:value="1" /> Always True
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer1}" th:value="2" /> Mostly True
+            <input type="radio" th:field="*{{desiredAnswer1}}" th:value="2" /> Mostly True
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer1}" th:value="3" /> Sometimes True Sometimes False
+            <input type="radio" th:field="*{{desiredAnswer1}}" th:value="3" /> Sometimes True Sometimes False
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer1}" th:value="4" /> Mostly False
+            <input type="radio" th:field="*{{desiredAnswer1}}" th:value="4" /> Mostly False
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer1}" th:value="5" /> Always False
+            <input type="radio" th:field="*{{desiredAnswer1}}" th:value="5" /> Always False
             <br></br>
         </div>
         <br></br>
+
         <div>
             <br></br>
             <label th:for="desiredAnswer2">Desired Answer 2</label>
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer2}" th:value="1" /> Always True
+            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="1" /> Always True
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer2}" th:value="2" /> Mostly True
+            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="2" /> Mostly True
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer2}" th:value="3" /> Sometimes True Sometimes False
+            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="3" /> Sometimes True Sometimes False
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer2}" th:value="4" /> Mostly False
+            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="4" /> Mostly False
             <br></br>
-            <input type="radio" th:name="*{desiredAnswer2}" th:value="5" /> Always False
+            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="5" /> Always False
             <br></br>
         </div>
+
         <div>
             <br></br>
             <label>Do the answers match with both questions or is the question worded in opposite terms?</label>
-        <select name="questionId">
+        <select name="matchingOpposite">
             <option th:text="match"
-                    th:value="*{matchingOpposite}">Match</option>
+                    th:field="*{matchingOpposite}"
+                    th:value="true">Match</option>
             <option th:text="opposite"
-                    th:value="*{matchingOpposite}">Opposite</option>
+                    th:field="*{matchingOpposite}"
+                    th:value="false">Opposite</option>
         </select>
         </div>
         <br></br>

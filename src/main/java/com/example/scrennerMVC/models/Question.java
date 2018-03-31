@@ -1,8 +1,8 @@
 package com.example.scrennerMVC.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Question {
@@ -29,6 +29,28 @@ public class Question {
 
 
 
+    @ManyToOne
+    private Test test;
+
+
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
+    }
+
+
+
+
+//    public List<Test> getTests() {
+//        return tests;
+//    }
+//
+//    public void setTests(List<Test> tests) {
+//        this.tests = tests;
+//    }
 
 
 
