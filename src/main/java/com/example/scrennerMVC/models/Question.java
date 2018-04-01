@@ -1,6 +1,8 @@
 package com.example.scrennerMVC.models;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,17 +13,23 @@ public class Question {
     @GeneratedValue
     private int id;
 
+    @NotNull
+    @Size(min=3, message = "Please add a question")
     private String question1;
 
+    @NotNull
+    @Size(min=3, message = "Please add a question")
     private String question2;
 
 //    private int answer1;
 //
 //    private int answer2;
 
-    private int desiredAnswer1;
 
-    private int desiredAnswer2;
+    private Integer desiredAnswer1;
+
+
+    private Integer desiredAnswer2;
 
 //    private int matchingAnswer;
 
@@ -102,19 +110,19 @@ public class Question {
 //        this.answer2 = answer2;
 //    }
 
-    public int getDesiredAnswer1() {
+    public Integer getDesiredAnswer1() {
         return desiredAnswer1;
     }
 
-    public void setDesiredAnswer1(int desiredAnswer1) {
+    public void setDesiredAnswer1(Integer desiredAnswer1) {
         this.desiredAnswer1 = desiredAnswer1;
     }
 
-    public int getDesiredAnswer2() {
+    public Integer getDesiredAnswer2() {
         return desiredAnswer2;
     }
 
-    public void setDesiredAnswer2(int desiredAnswer2) {
+    public void setDesiredAnswer2(Integer desiredAnswer2) {
         this.desiredAnswer2 = desiredAnswer2;
     }
 
