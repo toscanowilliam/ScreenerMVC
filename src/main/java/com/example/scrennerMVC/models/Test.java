@@ -25,6 +25,33 @@ public class Test {
     private List<Question> questions = new ArrayList<>();
 
 
+    @NotNull
+    @Size(min=3, message = "Please add a name for the test")
+    private String testName;
+
+    @NotNull
+    @Size(min=3, message = "Please add a description for the test")
+    private String description;
+
+
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTestName() {
+        return testName;
+    }
+
+    public void setTestName(String testName) {
+        this.testName = testName;
+    }
+
     public List<Question> getQuestions() {
         return questions;
     }
