@@ -118,4 +118,25 @@ public class TestController {
         }
 
 
+        @RequestMapping(value="taketest/{testId}", method=RequestMethod.GET)
+        public String displayTest(Model model, @PathVariable int testId ){
+
+        Test currentTest = testDao.findOne(testId);
+
+        //List<Question> currentTestQuestions = currentTest.getQuestions();
+
+        model.addAttribute("title","Take The Test!");
+        model.addAttribute("test", currentTest);
+        //model.addAttribute("questions",currentTestQuestions);
+
+        return "test/takeTest";
+
+
+
+        }
+
+
+
+
+
 }

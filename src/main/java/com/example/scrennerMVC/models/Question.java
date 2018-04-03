@@ -26,7 +26,7 @@ public class Question {
 //    private int answer2;
 
 
-    private Integer desiredAnswer1;
+    public Integer desiredAnswer1;
 
 
     private Integer desiredAnswer2;
