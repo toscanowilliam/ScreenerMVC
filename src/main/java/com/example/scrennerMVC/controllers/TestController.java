@@ -75,11 +75,11 @@ public class TestController {
 
     @RequestMapping(value = "/newquestion/{testId}", method=RequestMethod.POST)
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
-                                     @RequestParam(required = false) Integer desiredAnswer, @RequestParam(required = false) Integer desiredAnswer2){
+                                     @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2){
 
-        if (errors.hasErrors() || (desiredAnswer == null) || (desiredAnswer2 == null) ) {
+        if (errors.hasErrors() || (desiredAnswer1 == null) || (desiredAnswer2 == null) ) {
             System.out.println("made it in");
-            if (errors.hasErrors() || ((desiredAnswer == null) || (desiredAnswer2 == null)) ){
+            if (errors.hasErrors() || ((desiredAnswer1 == null) || (desiredAnswer2 == null)) ){
                 System.out.println("made it in to the second");
                 model.addAttribute("title","New Question");
                 model.addAttribute("claimedError","Please Select a Desired Answer");
@@ -116,6 +116,27 @@ public class TestController {
         return "redirect:/test/newquestion/" + stringTestId;
 
         }
+
+
+        @RequestMapping(value="taketest/{testId}", method=RequestMethod.GET)
+        public String displayTest(Model model, @PathVariable int testId ){
+
+        Test currentTest = testDao.findOne(testId);
+
+        //List<Question> currentTestQuestions = currentTest.getQuestions();
+
+        model.addAttribute("title","Take The Test!");
+        model.addAttribute("test", currentTest);
+        //model.addAttribute("questions",currentTestQuestions);
+
+        return "test/takeTest";
+
+
+
+        }
+
+
+
 
 
 }
