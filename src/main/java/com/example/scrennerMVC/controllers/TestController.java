@@ -1,9 +1,13 @@
 package com.example.scrennerMVC.controllers;
 
+import com.example.scrennerMVC.models.Answer;
 import com.example.scrennerMVC.models.Question;
 import com.example.scrennerMVC.models.Test;
+import com.example.scrennerMVC.models.User;
+import com.example.scrennerMVC.models.data.AnswerDao;
 import com.example.scrennerMVC.models.data.QuestionDao;
 import com.example.scrennerMVC.models.data.TestDao;
+import com.example.scrennerMVC.models.data.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,9 +15,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.Errors;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -26,6 +33,12 @@ public class TestController {
 
     @Autowired
     TestDao testDao;
+
+    @Autowired
+    AnswerDao answerDao;
+
+    @Autowired
+    UserDao userDao;
 
 
 
@@ -75,7 +88,7 @@ public class TestController {
 
     @RequestMapping(value = "/newquestion/{testId}", method=RequestMethod.POST)
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
-                                     @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2){
+                                     @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session){
 
         if (errors.hasErrors() || (desiredAnswer1 == null) || (desiredAnswer2 == null) ) {
             System.out.println("made it in");
@@ -111,6 +124,33 @@ public class TestController {
 
 
         String stringTestId = Integer.toString(testId);
+
+
+
+        User currentUser = (User) session.getAttribute("loggedInUser");
+
+        Answer anAnswer = new Answer();
+
+        int aNumber = 1;
+
+        anAnswer.setAnswer(aNumber);
+        anAnswer.setUser(currentUser);
+
+        HashMap<Question,Answer> answerMap = new HashMap<>();
+
+        answerMap.put(currentQuestionSet, anAnswer);
+
+        currentUser.setAnswers(answerMap);
+
+        answerDao.save(anAnswer);
+
+        userDao.save(currentUser);
+
+
+
+
+
+
 
 
         return "redirect:/test/newquestion/" + stringTestId;

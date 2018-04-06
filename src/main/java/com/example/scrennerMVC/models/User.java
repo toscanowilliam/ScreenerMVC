@@ -1,12 +1,11 @@
 package com.example.scrennerMVC.models;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 public class User {
@@ -29,6 +28,11 @@ public class User {
 
     @NotNull
     private String pwHash;
+
+
+    @OneToMany(mappedBy = "user")
+    @MapKeyJoinColumn(name="QUESTION_ID")
+    Map<Question,Answer> answers = new HashMap<>();
 
 
 
@@ -63,6 +67,15 @@ public class User {
     public void setPwHash(String pwHash) {
         this.pwHash = pwHash;
     }
+
+    public Map<Question, Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(Map<Question, Answer> answers) {
+        this.answers = answers;
+    }
+
 
 
 
