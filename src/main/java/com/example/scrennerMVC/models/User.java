@@ -4,13 +4,13 @@ package com.example.scrennerMVC.models;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
 public class User {
-
-
 
     @Id
     @GeneratedValue
@@ -20,19 +20,23 @@ public class User {
     @Size(min=5, max=30)
     private String email;
 
-
     @Size(min=3, max=15)
     @Transient
     private String password;
 
-
     @NotNull
     private String pwHash;
-
 
     @OneToMany(mappedBy = "user")
     @MapKeyJoinColumn(name="QUESTION_ID")
     Map<Question,Answer> answers = new HashMap<>();
+
+    @OneToMany
+    @JoinColumn(name="test_creator_id")
+    private List<Test> test = new ArrayList<>();
+
+
+
 
 
 
@@ -75,6 +79,16 @@ public class User {
     public void setAnswers(Map<Question, Answer> answers) {
         this.answers = answers;
     }
+
+    public List<Test> getTest() {
+        return test;
+    }
+
+    public void setTest(List<Test> test) {
+        this.test = test;
+    }
+
+
 
 
 

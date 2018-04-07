@@ -52,7 +52,7 @@ public class TestController {
     }
 
     @RequestMapping(value="/newtest", method=RequestMethod.POST)
-    public String processAddTest(Model model, @ModelAttribute @Valid Test test, BindingResult errors){
+    public String processAddTest(Model model, @ModelAttribute @Valid Test test, BindingResult errors, HttpSession session){
 
 
         if (errors.hasErrors()){
@@ -60,6 +60,8 @@ public class TestController {
             return "test/newTest";
         }
 
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        test.setTestCreator(currentUser);
         testDao.save(test);
         int testId = test.getId();
         String stringTestId = Integer.toString(testId);
@@ -134,13 +136,15 @@ public class TestController {
         int aNumber = 1;
 
         anAnswer.setAnswer(aNumber);
+        anAnswer.setMatchingAnswer(aNumber);
+        anAnswer.setQuestion(currentQuestionSet);
         anAnswer.setUser(currentUser);
 
         HashMap<Question,Answer> answerMap = new HashMap<>();
 
         answerMap.put(currentQuestionSet, anAnswer);
 
-        currentUser.setAnswers(answerMap);
+//        currentUser.setAnswers(answerMap);
 
         answerDao.save(anAnswer);
 

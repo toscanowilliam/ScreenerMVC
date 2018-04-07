@@ -1,6 +1,8 @@
 package com.example.scrennerMVC.models;
 
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 
 
@@ -14,21 +16,22 @@ public class Answer {
 
     private int answer;
 
+    private int matchingAnswer;
 
     @ManyToOne
-    private User user;
-
-    public Question getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(Question question) {
-        this.question = question;
-    }
+    private User user; //user who answers questions
 
     @ManyToOne
     @JoinColumn(name="QUESTION_ID")
-    Question question;
+    Question question; //question of the current answer
+
+//    @ManyToOne
+//    @JoinColumn(name="QUESTION_MATCH_ID")
+//    QuestionMatch questionMatch;
+
+
+
+
 
     public long getId() {
         return id;
@@ -52,6 +55,22 @@ public class Answer {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public int getMatchingAnswer() {
+        return matchingAnswer;
+    }
+
+    public void setMatchingAnswer(int matchingAnswer) {
+        this.matchingAnswer = matchingAnswer;
     }
 
 }

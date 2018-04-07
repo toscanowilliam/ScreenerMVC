@@ -4,7 +4,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public class Question {
@@ -14,26 +16,27 @@ public class Question {
     private int id;
 
     @NotNull
-    @Size(min=3, message = "Please add a question")
+    @Size(min = 3, message = "Please add a question")
     private String question1;
 
     @NotNull
     @Size(min=3, message = "Please add a question")
     private String question2;
 
-
-    public Integer desiredAnswer1;
-
+    private Integer desiredAnswer1;
 
     private Integer desiredAnswer2;
 
-
     private Boolean matchingOpposite;
-
-
 
     @ManyToOne
     private Test test;
+
+//    @OneToOne
+//    QuestionMatch matchingQuestion;
+
+
+    //Map<Question, QuestionMatch> questions = new HashMap<>();
 
 
     public Test getTest() {
@@ -44,12 +47,13 @@ public class Question {
         this.test = test;
     }
 
-    public Question(String question1, String question2){
+    public Question(String question1, String question2) {
         this.question1 = question1;
         this.question2 = question2;
     }
 
-    public Question(){}
+    public Question() {
+    }
 
 
     public int getId() {
@@ -90,8 +94,7 @@ public class Question {
     }
 
     public void setDesiredAnswer2(Integer desiredAnswer2) {
-        this.desiredAnswer2 = desiredAnswer2;
-    }
+        this.desiredAnswer2 = desiredAnswer2; }
 
     public Boolean getMatchingOpposite() {
         return matchingOpposite;

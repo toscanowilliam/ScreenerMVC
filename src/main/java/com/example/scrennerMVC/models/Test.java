@@ -19,11 +19,8 @@ public class Test {
     @GeneratedValue
     private int id;
 
-
-
     @OneToMany
     private List<Question> questions = new ArrayList<>();
-
 
     @NotNull
     @Size(min=3, message = "Please add a name for the test")
@@ -32,6 +29,9 @@ public class Test {
     @NotNull
     @Size(min=3, message = "Please add a description for the test")
     private String description;
+
+    @ManyToOne
+    private User testCreator;
 
 
 
@@ -69,13 +69,15 @@ public class Test {
         this.id = id;
     }
 
-//    public List<Question> getQuestions() {
-//        return questions;
-//    }
-//
-//    public void setQuestions(List<Question> questions) {
-//        this.questions = questions;
-//    }
+    public User getTestCreator() {
+        return testCreator;
+    }
+
+    public void setTestCreator(User testCreator) {
+        this.testCreator = testCreator;
+    }
+
+
 
 
 }
