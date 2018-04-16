@@ -38,6 +38,13 @@ public class Question {
 
     //Map<Question, QuestionMatch> questions = new HashMap<>();
 
+//
+//    @OneToMany(mappedBy = "question")
+//    @MapKeyJoinColumn(name="TEST_ID")
+//    Map<Test,Answer> answers = new HashMap<>(); //One User to many answers of questions
+
+
+
 
     public Test getTest() {
         return test;

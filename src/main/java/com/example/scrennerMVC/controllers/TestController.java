@@ -41,9 +41,8 @@ public class TestController {
     UserDao userDao;
 
 
-
-    @RequestMapping(value= "/newtest", method=RequestMethod.GET)
-    public String displayAddTest(Model model){
+    @RequestMapping(value = "/newtest", method = RequestMethod.GET)
+    public String displayAddTest(Model model) {
 
         model.addAttribute("title", "New Test");
         model.addAttribute(new Test());
@@ -51,11 +50,11 @@ public class TestController {
         return "test/newTest";
     }
 
-    @RequestMapping(value="/newtest", method=RequestMethod.POST)
-    public String processAddTest(Model model, @ModelAttribute @Valid Test test, BindingResult errors, HttpSession session){
+    @RequestMapping(value = "/newtest", method = RequestMethod.POST)
+    public String processAddTest(Model model, @ModelAttribute @Valid Test test, BindingResult errors, HttpSession session) {
 
 
-        if (errors.hasErrors()){
+        if (errors.hasErrors()) {
             model.addAttribute("title", "New Test");
             return "test/newTest";
         }
@@ -70,8 +69,7 @@ public class TestController {
     }
 
 
-
-    @RequestMapping(value= "/newquestion/{testId}", method=RequestMethod.GET)
+    @RequestMapping(value = "/newquestion/{testId}", method = RequestMethod.GET)
     public String displayAddQuestion(Model model, @PathVariable int testId) {
 
 
@@ -84,29 +82,28 @@ public class TestController {
         return "test/newQuestion";
 
 
-
     }
 
 
-    @RequestMapping(value = "/newquestion/{testId}", method=RequestMethod.POST)
+    @RequestMapping(value = "/newquestion/{testId}", method = RequestMethod.POST)
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
-                                     @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session){
+                                     @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session) {
 
-        if (errors.hasErrors() || (desiredAnswer1 == null) || (desiredAnswer2 == null) ) {
+        if (errors.hasErrors() || (desiredAnswer1 == null) || (desiredAnswer2 == null)) {
             System.out.println("made it in");
-            if (errors.hasErrors() || ((desiredAnswer1 == null) || (desiredAnswer2 == null)) ){
+            if (errors.hasErrors() || ((desiredAnswer1 == null) || (desiredAnswer2 == null))) {
                 System.out.println("made it in to the second");
-                model.addAttribute("title","New Question");
-                model.addAttribute("claimedError","Please Select a Desired Answer");
+                model.addAttribute("title", "New Question");
+                model.addAttribute("claimedError", "Please Select a Desired Answer");
 
                 return "test/newQuestion";
             }
 
-            if (errors.hasErrors()){
+            if (errors.hasErrors()) {
                 System.out.println("made it in to the third");
-                model.addAttribute("title","New Question");
+                model.addAttribute("title", "New Question");
                 model.addAttribute(new Question());
-            return "test/newQuestion";
+                return "test/newQuestion";
             }
 
         }
@@ -128,7 +125,6 @@ public class TestController {
         String stringTestId = Integer.toString(testId);
 
 
-
         User currentUser = (User) session.getAttribute("loggedInUser");
 
         Answer anAnswer = new Answer();
@@ -140,7 +136,7 @@ public class TestController {
         anAnswer.setQuestion(currentQuestionSet);
         anAnswer.setUser(currentUser);
 
-        HashMap<Question,Answer> answerMap = new HashMap<>();
+        HashMap<Question, Answer> answerMap = new HashMap<>();
 
         answerMap.put(currentQuestionSet, anAnswer);
 
@@ -151,30 +147,89 @@ public class TestController {
         userDao.save(currentUser);
 
 
-
-
-
-
-
-
         return "redirect:/test/newquestion/" + stringTestId;
 
-        }
+    }
 
 
-        @RequestMapping(value="taketest/{testId}", method=RequestMethod.GET)
-        public String displayTest(Model model, @PathVariable int testId ){
+    @RequestMapping(value = "taketest/{testId}", method = RequestMethod.GET)
+    public String displayAddTest(Model model, @PathVariable int testId, HttpSession session) {
 
+
+        User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
-
+        int questionNumber = 1;
         //List<Question> currentTestQuestions = currentTest.getQuestions();
+        // Answer answer = new Answer();
 
-        model.addAttribute("title","Take The Test!");
+
+        model.addAttribute("title", "Take The Test!");
         model.addAttribute("test", currentTest);
+        model.addAttribute("questionNumber", questionNumber);
+        //model.addAttribute("answer1", answer.getAnswer()); //might not need this
+
+        //model.addAttribute("answer2", answer.getMatchingAnswer());
+
+
         //model.addAttribute("questions",currentTestQuestions);
 
         return "test/takeTest";
 
+    }
+
+
+    @RequestMapping(value="taketest/{testId}", method=RequestMethod.POST)
+    public String processAddTest(Model model, @PathVariable int testId, HttpSession session, @RequestParam(name="allAnswers") String allAnswers, @RequestParam(name="questionIds") String questionIds){
+
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        Test currentTest = testDao.findOne(testId);
+        List<Question> currentTestQuestions = currentTest.getQuestions();
+
+        Integer aNumber = 1;
+
+
+
+//        for (HashMap<String, String> answer : allAnswers){ //maybe make this int i and itterate though userAnswer.size()?
+//            Answer currentAnswer = new Answer();
+//            int answerInt = Integer.parseInt(answer);
+//            currentAnswer.setAnswer(answerInt);
+//            Question currentQuestion = questionDao.findOne(questionId[aNumber]); //question being answered
+//            currentAnswer.setQuestion(currentQuestion);
+//            aNumber += 1;
+//            currentAnswer.setUser(currentUser);
+//
+//            Map<Question,Answer>  answerMap = new HashMap<>();
+//            answerMap.put(currentQuestion, currentAnswer);
+//            currentUser.setAnswers(answerMap);
+//
+//            answerDao.save(currentAnswer);
+//            userDao.save(currentUser);
+//
+//            aNumber += 1;
+//
+//
+//
+//
+//        }
+        return "redirect:/home";
+
+
+//        for (Integer i : answer1){
+//            Answer testAnswer = new Answer();
+//            testAnswer.setAnswer(i);
+//            testAnswer.setUser(currentUser);
+//            testAnswer.setQuestion(currentTestQuestions.get());
+//        }
+//
+//
+//        testAnswer.setAnswer(answer1);
+//        testAnswer.setMatchingAnswer(answer2);
+//
+//        testAnswer.setUser(currentUser);
+
+
+
+//        Map<Question, Answer> answer = new HashMap<>();
 
 
         }

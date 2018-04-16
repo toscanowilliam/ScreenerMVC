@@ -29,11 +29,11 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @MapKeyJoinColumn(name="QUESTION_ID")
-    Map<Question,Answer> answers = new HashMap<>();
+    Map<Question,Answer> answers = new HashMap<>(); //One User to many answers of questions
 
     @OneToMany
     @JoinColumn(name="test_creator_id")
-    private List<Test> test = new ArrayList<>();
+    private List<Test> createdTests = new ArrayList<>();
 
 
 
@@ -81,11 +81,11 @@ public class User {
     }
 
     public List<Test> getTest() {
-        return test;
+        return createdTests;
     }
 
     public void setTest(List<Test> test) {
-        this.test = test;
+        this.createdTests = test;
     }
 
 

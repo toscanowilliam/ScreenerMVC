@@ -33,6 +33,9 @@ public class Test {
     @ManyToOne
     private User testCreator;
 
+    @ManyToMany
+    private List<User> testTakers;
+
 
 
 
@@ -77,6 +80,13 @@ public class Test {
         this.testCreator = testCreator;
     }
 
+    public List<User> getTestTakers() {
+        return testTakers;
+    }
+
+    public void setTestTakers(List<User> testTakers) {
+        this.testTakers = testTakers;
+    }
 
 
 

@@ -23,7 +23,11 @@ public class Answer {
 
     @ManyToOne
     @JoinColumn(name="QUESTION_ID")
-    Question question; //question of the current answer
+    private Question question; //question of the current answer
+
+//    @ManyToOne
+//    @JoinColumn(name="TEST_ID")
+//    private Test test;
 
 //    @ManyToOne
 //    @JoinColumn(name="QUESTION_MATCH_ID")
