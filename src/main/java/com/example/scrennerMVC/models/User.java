@@ -1,17 +1,16 @@
 package com.example.scrennerMVC.models;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 public class User {
-
-
 
     @Id
     @GeneratedValue
@@ -21,14 +20,23 @@ public class User {
     @Size(min=5, max=30)
     private String email;
 
-
     @Size(min=3, max=15)
     @Transient
     private String password;
 
-
     @NotNull
     private String pwHash;
+
+    @OneToMany(mappedBy = "user")
+    @MapKeyJoinColumn(name="QUESTION_ID")
+    Map<Question,Answer> answers = new HashMap<>(); //One User to many answers of questions
+
+    @OneToMany
+    @JoinColumn(name="test_creator_id")
+    private List<Test> createdTests = new ArrayList<>();
+
+
+
 
 
 
@@ -63,6 +71,25 @@ public class User {
     public void setPwHash(String pwHash) {
         this.pwHash = pwHash;
     }
+
+    public Map<Question, Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(Map<Question, Answer> answers) {
+        this.answers = answers;
+    }
+
+    public List<Test> getTest() {
+        return createdTests;
+    }
+
+    public void setTest(List<Test> test) {
+        this.createdTests = test;
+    }
+
+
+
 
 
 

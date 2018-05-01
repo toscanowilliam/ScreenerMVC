@@ -4,7 +4,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public class Question {
@@ -14,31 +16,34 @@ public class Question {
     private int id;
 
     @NotNull
-    @Size(min=3, message = "Please add a question")
+    @Size(min = 3, message = "Please add a question")
     private String question1;
 
     @NotNull
     @Size(min=3, message = "Please add a question")
     private String question2;
 
-//    private int answer1;
-//
-//    private int answer2;
-
-
-    public Integer desiredAnswer1;
-
+    private Integer desiredAnswer1;
 
     private Integer desiredAnswer2;
 
-//    private int matchingAnswer;
-
     private Boolean matchingOpposite;
-
-
 
     @ManyToOne
     private Test test;
+
+//    @OneToOne
+//    QuestionMatch matchingQuestion;
+
+
+    //Map<Question, QuestionMatch> questions = new HashMap<>();
+
+//
+//    @OneToMany(mappedBy = "question")
+//    @MapKeyJoinColumn(name="TEST_ID")
+//    Map<Test,Answer> answers = new HashMap<>(); //One User to many answers of questions
+
+
 
 
     public Test getTest() {
@@ -49,25 +54,13 @@ public class Question {
         this.test = test;
     }
 
-
-
-
-//    public List<Test> getTests() {
-//        return tests;
-//    }
-//
-//    public void setTests(List<Test> tests) {
-//        this.tests = tests;
-//    }
-
-
-
-    public Question(String question1, String question2){
+    public Question(String question1, String question2) {
         this.question1 = question1;
         this.question2 = question2;
     }
 
-    public Question(){}
+    public Question() {
+    }
 
 
     public int getId() {
@@ -94,21 +87,6 @@ public class Question {
         this.question2 = question2;
     }
 
-//    public int getAnswer1() {
-//        return answer1;
-//    }
-//
-//    public void setAnswer1(int answer1) {
-//        this.answer1 = answer1;
-//    }
-//
-//    public int getAnswer2() {
-//        return answer2;
-//    }
-//
-//    public void setAnswer2(int answer2) {
-//        this.answer2 = answer2;
-//    }
 
     public Integer getDesiredAnswer1() {
         return desiredAnswer1;
@@ -123,16 +101,7 @@ public class Question {
     }
 
     public void setDesiredAnswer2(Integer desiredAnswer2) {
-        this.desiredAnswer2 = desiredAnswer2;
-    }
-
-//    public int getMatchingAnswer() {
-//        return matchingAnswer;
-//    }
-//
-//    public void setMatchingAnswer(int matchingAnswer) {
-//        this.matchingAnswer = matchingAnswer;
-//    }
+        this.desiredAnswer2 = desiredAnswer2; }
 
     public Boolean getMatchingOpposite() {
         return matchingOpposite;
@@ -141,8 +110,5 @@ public class Question {
     public void setMatchingOpposite(Boolean matchingOpposite) {
         this.matchingOpposite = matchingOpposite;
     }
-
-
-
 
 }
