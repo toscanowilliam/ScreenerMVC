@@ -35,6 +35,12 @@ public class Answer {
 
 
 
+    @ManyToOne
+    private Test currentTest;
+
+
+
+
 
 
     public long getId() {
@@ -76,5 +82,14 @@ public class Answer {
     public void setMatchingAnswer(int matchingAnswer) {
         this.matchingAnswer = matchingAnswer;
     }
+
+    public Test getCurrentTest() {
+        return currentTest;
+    }
+
+    public void setCurrentTest(Test current) {
+        this.currentTest = current;
+    }
+
 
 }

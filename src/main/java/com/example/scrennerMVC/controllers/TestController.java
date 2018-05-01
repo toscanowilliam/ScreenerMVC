@@ -17,10 +17,7 @@ import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
@@ -153,25 +150,22 @@ public class TestController {
 
 
     @RequestMapping(value = "taketest/{testId}", method = RequestMethod.GET)
-    public String displayAddTest(Model model, @PathVariable int testId, HttpSession session) {
+    public String displayTakeTest(Model model, @PathVariable int testId, HttpSession session) {
 
 
         User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
-        int questionNumber = 1;
-        //List<Question> currentTestQuestions = currentTest.getQuestions();
-        // Answer answer = new Answer();
+
+        List<Question> currentTestQuestions = currentTest.getQuestions();
+
+        Collections.shuffle(currentTestQuestions);
+
+        currentTest.setQuestions(currentTestQuestions);
+
 
 
         model.addAttribute("title", "Take The Test!");
         model.addAttribute("test", currentTest);
-        model.addAttribute("questionNumber", questionNumber);
-        //model.addAttribute("answer1", answer.getAnswer()); //might not need this
-
-        //model.addAttribute("answer2", answer.getMatchingAnswer());
-
-
-        //model.addAttribute("questions",currentTestQuestions);
 
         return "test/takeTest";
 
@@ -179,60 +173,53 @@ public class TestController {
 
 
     @RequestMapping(value="taketest/{testId}", method=RequestMethod.POST)
-    public String processAddTest(Model model, @PathVariable int testId, HttpSession session, @RequestParam(name="allAnswers") String allAnswers, @RequestParam(name="questionIds") String questionIds){
+    public String processTakeTest(Model model, @PathVariable int testId, HttpSession session, @RequestParam(name="allAnswers") String allAnswers[], @RequestParam(name="questionIds") String questionIds[]){
 
         User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
         List<Question> currentTestQuestions = currentTest.getQuestions();
 
-        Integer aNumber = 1;
+        int arraySize = allAnswers.length;
+
+        int aPosition = 0;
 
 
 
-//        for (HashMap<String, String> answer : allAnswers){ //maybe make this int i and itterate though userAnswer.size()?
-//            Answer currentAnswer = new Answer();
-//            int answerInt = Integer.parseInt(answer);
-//            currentAnswer.setAnswer(answerInt);
-//            Question currentQuestion = questionDao.findOne(questionId[aNumber]); //question being answered
-//            currentAnswer.setQuestion(currentQuestion);
-//            aNumber += 1;
-//            currentAnswer.setUser(currentUser);
-//
-//            Map<Question,Answer>  answerMap = new HashMap<>();
-//            answerMap.put(currentQuestion, currentAnswer);
-//            currentUser.setAnswers(answerMap);
-//
-//            answerDao.save(currentAnswer);
-//            userDao.save(currentUser);
-//
-//            aNumber += 1;
-//
-//
-//
-//
-//        }
-        return "redirect:/home";
 
 
-//        for (Integer i : answer1){
-//            Answer testAnswer = new Answer();
-//            testAnswer.setAnswer(i);
-//            testAnswer.setUser(currentUser);
-//            testAnswer.setQuestion(currentTestQuestions.get());
-//        }
-//
-//
-//        testAnswer.setAnswer(answer1);
-//        testAnswer.setMatchingAnswer(answer2);
-//
-//        testAnswer.setUser(currentUser);
+        for (String answer : allAnswers){
 
+            Answer currentAnswer = new Answer();
+            int currentAnswerInt = Integer.parseInt(answer);
 
+            String matchingPosition = allAnswers[aPosition+(arraySize/2)];
+            int matchingPositionInt = Integer.parseInt(matchingPosition);
 
-//        Map<Question, Answer> answer = new HashMap<>();
+            String questionId = questionIds[aPosition];
+            int questionIdInt = Integer.parseInt(questionId);
+            Question currentQuestion = questionDao.findOne(questionIdInt);
 
+            currentAnswer.setUser(currentUser);
+            currentAnswer.setQuestion(currentQuestion);
+            currentAnswer.setCurrentTest(currentTest);
+            currentAnswer.setAnswer(currentAnswerInt);
+            currentAnswer.setMatchingAnswer(matchingPositionInt);
+            //the matching answer position is always the position count PLUS the arraySize divided by 2
+            Map<Question, Answer> answerMap = new HashMap<>();
+            answerMap.put(currentQuestion,currentAnswer);
+            currentUser.setAnswers(answerMap);
+
+            answerDao.save(currentAnswer);
+            userDao.save(currentUser);
+
+            aPosition += 1;
+            if (aPosition >= arraySize/2){
+                break;
+            }
 
         }
+        return "redirect:/home";
+    }
 
 
 
