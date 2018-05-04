@@ -25,15 +25,6 @@ public class Answer {
     @JoinColumn(name="QUESTION_ID")
     private Question question; //question of the current answer
 
-//    @ManyToOne
-//    @JoinColumn(name="TEST_ID")
-//    private Test test;
-
-//    @ManyToOne
-//    @JoinColumn(name="QUESTION_MATCH_ID")
-//    QuestionMatch questionMatch;
-
-
 
     @ManyToOne
     private Test currentTest;

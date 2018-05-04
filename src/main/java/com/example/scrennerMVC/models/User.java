@@ -29,7 +29,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @MapKeyJoinColumn(name="QUESTION_ID")
-    Map<Question,Answer> answers = new HashMap<>(); //One User to many answers of questions
+    private Map<Question,Answer> answers = new HashMap<>(); //One User to many answers of questions
 
     @OneToMany
     @JoinColumn(name="test_creator_id")

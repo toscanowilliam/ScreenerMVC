@@ -137,8 +137,6 @@ public class TestController {
 
         answerMap.put(currentQuestionSet, anAnswer);
 
-//        currentUser.setAnswers(answerMap);
-
         answerDao.save(anAnswer);
 
         userDao.save(currentUser);
@@ -155,10 +153,6 @@ public class TestController {
 
         User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
-
-        List<Question> currentTestQuestions = currentTest.getQuestions();
-
-        List<Question> currentTestQuestions1 = currentTest.getQuestions();
 
         List<Question> currentMatchingTestQuestions1 = currentTest.getQuestions();
 
@@ -179,34 +173,15 @@ public class TestController {
             currentMatchingTestQuestions1.set(randomIndex, currentElement);
         }
 
-
-
-
-
-
-//        Collections.shuffle(currentMatchingTestQuestions1);
-
         List<Question> newList = new ArrayList<>(currentMatchingTestQuestions1);
 
         Collections.shuffle(newList);
-
-
-
-
-
 
         model.addAttribute("title", "Take The Test!");
         model.addAttribute("currentMatchingTestQuestions", currentMatchingTestQuestions1);
         model.addAttribute("newList", newList);
 
-        Collections.shuffle(currentTestQuestions);
-        currentTest.setQuestions(currentTestQuestions);
-
         model.addAttribute("test",currentTest);
-
-
-
-
 
         return "test/takeTest";
 
@@ -224,17 +199,10 @@ public class TestController {
 
         int aPosition = 0;
 
-        Map<Integer, Integer> map = new HashMap<>(); //questionId as key, answer as Value.
-
-
-
             for (String answer : allAnswers) {
 
                 Answer currentAnswer = new Answer();
                 int currentAnswerInt = Integer.parseInt(answer);
-
-//                String matchingPosition = allAnswers[aPosition + (arraySize / 2)];
-//                int matchingPositionInt = Integer.parseInt(matchingPosition);
 
                 String questionId = questionIds[aPosition];
                 int questionIdInt = Integer.parseInt(questionId);
@@ -252,8 +220,8 @@ public class TestController {
                         System.out.println("yay! for loop!");
 
                         if (Integer.parseInt(questionIds[i]) == Integer.parseInt(questionId)) {
-                          //  int matchingQuestionId = Integer.parseInt(questionIds[i]);
                             System.out.println("yay! for loop! and second If statement!");
+
                             String matchingAnswer = allAnswers[i];
                             int matchingAnswerInt = Integer.parseInt(matchingAnswer);
 
@@ -266,57 +234,17 @@ public class TestController {
                     return "redirect:/home";
                 }
 
-
-//                currentAnswer.setMatchingAnswer(matchingPositionInt);
-                //the matching answer position is always the position count PLUS the arraySize divided by 2
-
-//                map.put(questionIdInt,currentAnswerInt);
-
                 Map<Question, Answer> answerMap = new HashMap<>();
-//                answerMap.put(currentQuestion, currentAnswer);
                 currentUser.setAnswers(answerMap);
 
                 answerDao.save(currentAnswer);
                 userDao.save(currentUser);
 
                 aPosition += 1;
-//                if (aPosition >= arraySize / 2) {
-//
-//
-//
-//                    //loop through questionIds array and get the question with the
-//
-//                    String newQuestionId = questionIds[aPosition];
-//                    int newQuestionIdInt = Integer.parseInt(newQuestionId);
-//                    int currentAnswerFromId = map.get(newQuestionIdInt);
-//                    Question currentMatchingQuestion = questionDao.findOne(questionIdInt);// not sure if we need this
-//                    currentMatchingQuestion.getId(); // but we need the question Id
-//
-//                    question
-//
-//
-//
-//
-//            }
             }
-//        else{ //should probably be an if
-//            String questionIdString = questionIds[aPosition];
-//            int questionIdInt = Integer.parseInt(questionIdString); // questionId
-//            Question currentMatchingQuestion = questionDao.findOne(questionIdInt);// not sure if we need this
-//            currentMatchingQuestion.getId(); // but we need the question Id
-//            for (int index=aPosition; index < allAnswers.length; index++ ){
-//                String currentMatchingAnswer = allAnswers[index];
-//                int currentMatchingAnswerInt = Integer.parseInt(currentMatchingAnswer);
-//
-//            }
-//
-//        }
-
 
             return "redirect:/home";
-
     }
-
 
 
 

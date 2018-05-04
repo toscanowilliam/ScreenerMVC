@@ -32,28 +32,6 @@ public class Question {
     @ManyToOne
     private Test test;
 
-//    @OneToOne
-//    QuestionMatch matchingQuestion;
-
-
-    //Map<Question, QuestionMatch> questions = new HashMap<>();
-
-//
-//    @OneToMany(mappedBy = "question")
-//    @MapKeyJoinColumn(name="TEST_ID")
-//    Map<Test,Answer> answers = new HashMap<>(); //One User to many answers of questions
-
-
-
-
-    public Test getTest() {
-        return test;
-    }
-
-    public void setTest(Test test) {
-        this.test = test;
-    }
-
     public Question(String question1, String question2) {
         this.question1 = question1;
         this.question2 = question2;
@@ -110,5 +88,14 @@ public class Question {
     public void setMatchingOpposite(Boolean matchingOpposite) {
         this.matchingOpposite = matchingOpposite;
     }
+
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
+    }
+
 
 }
