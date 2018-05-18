@@ -243,8 +243,36 @@ public class TestController {
                 aPosition += 1;
             }
 
+            processScore(allAnswers, questionIds);
+
             return "redirect:/home";
     }
+
+
+
+    public int processScore(String allAnswers[], String questionIds[]){
+
+        //Answer currentAnswer = answerDao.findOne(answerId);
+
+        /*
+
+            The second half of allAnswers are question2s, the second half of questionIds are for question 2s.
+            The point is to find the answers that match by checking which has the same questionId by looking at positions.
+            Example: Answer in allAnswers[0] has the questionId of questionsIds[0]. To find the matching answer, we
+                     we find the position in the second half of questionIds that has the same questionId.
+
+                     When we get the position of the duplicate questionId, we use that same position number to get the
+                     answer in allAnswers.
+
+         */
+        int score = 0;
+
+
+        return score;
+
+
+
+        }
 
 
 

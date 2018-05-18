@@ -3,8 +3,6 @@ function findChecked() {
     const checkedRadios = [];
     const questionIds = []; //arrays
     const answerInput = document.querySelector('#allAnswers'); //why is this declared twice again?
-    const questionIdInput2 = document.querySelector('#questionIds2');//sets variable for hidden input of questionIds
-    const matchingAnswerInput = document.querySelector('#allMatchingAnswers'); //why is this declared twice again?
     const questionIdInput = document.querySelector('#questionIds');//sets variable for hidden input of questionIds
     const radios = document.querySelectorAll('input[type=radio]');// sets variable for all radio button values
     radios.forEach(radio =>{ //loops through radio values
@@ -22,27 +20,7 @@ function findChecked() {
     console.log(questionIds);
 }
 
-function findMatchingChecked() {
 
-    const checkedRadios = [];
-    const questionIds = []; //arrays
-    const answerInput = document.querySelector('#allAnswers'); //why is this declared twice again?
-    const questionIdInput = document.querySelector('#questionIds');//sets variable for hidden input of questionIds
-    const radios = document.querySelectorAll('input[type=radio]');// sets variable for all radio button values
-    radios.forEach(radio =>{ //loops through radio values
-    if(radio.checked){ // if the radio button is checked
-        checkedRadios.push(radio.value); //push the value of radio button to checkedRadios array
-        questionIds.push(radio.dataset.questionId);//push question.Id to questionIds array. Notice that dataset interprets...
-                                                   //...question.id as questionId
-
-        }
-
-    });
-    answerInput.value = checkedRadios; // pass array of checked radios to answerInput for the id of "allAnswers" hidden input
-    questionIdInput.value = questionIds;// same as above but for id="questionIds" hidden input
-    console.log(checkedRadios);//debug
-    console.log(questionIds);
-}
 
 
 
