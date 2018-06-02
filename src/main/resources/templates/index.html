@@ -1,19 +1,107 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org/">
-<head th:replace="fragments :: head">
-    <title th:text="${title}">Title</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<nav th:replace="fragments :: navigation"></nav>
+
+<head>
+
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
+    <meta name="description" content=""></meta>
+    <meta name="author" content=""></meta>
+
+    <title>Small Business - Start Bootstrap Template</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous"/>
+
+    <!-- Custom styles for this template -->
+    <link href="CSS/styles.css" rel="stylesheet"></link>
+
 </head>
 
-<!--<nav th:replace="fragments2 :: navigation"></nav>-->
-
 <body>
-<nav th:replace="fragments :: navigation"></nav>
-<h1 th:text="${title}">Default Title</h1>
 
 
-<div th:replace="fragments :: javascript">
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Heading Row -->
+    <div class="row my-4">
+        <div class="col-lg-8">
+            <img class="img-fluid rounded" src="https://blog.uiin.org/wp-content/uploads/Fotolia_149793160_Subscription_Monthly_M-900x400.jpg" alt=""></img>
+        </div>
+        <!-- /.col-lg-8 -->
+        <div class="col-lg-4">
+            <h1>Screen Your Employees!</h1>
+            <p>Create tests to test your eployees on their knowledge, personality, and consistency. </p>
+            <a class="btn btn-primary btn-lg" href="/test/newtest">Create a Test!</a>
+        </div>
+        <!-- /.col-md-4 -->
+    </div>
+    <!-- /.row -->
+
+    <!-- Call to Action Well -->
+    <!--<div class="card text-white bg-secondary my-4 text-center">-->
+        <!--<div class="card-body">-->
+            <!--<p class="text-white m-0">This call to action card is a great place to showcase some important information or display a clever tagline!</p>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="card-title">Personality Tests</h2>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem magni quas ex numquam, maxime minus quam molestias corporis quod, ea minima accusamus.</p>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="btn btn-primary">More Info</a>
+                </div>
+            </div>
+        </div>
+        <!-- /.col-md-4 -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="card-title">Are you a potentioal employee?</h2>
+                    <p class="card-text">Take tests created by the company you wish to work for!</p>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="btn btn-primary">More Info</a>
+                </div>
+            </div>
+        </div>
+        <!-- /.col-md-4 -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="card-title">Other Tests</h2>
+                    <p class="card-text">Browse our other kinds of tests!</p>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="btn btn-primary">More Info</a>
+                </div>
+            </div>
+        </div>
+        <!-- /.col-md-4 -->
+
+    </div>
+    <!-- /.row -->
 
 </div>
+<!-- /.container -->
+
+<!-- Footer -->
+ <footer th:replace="fragments :: footer"></footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>
