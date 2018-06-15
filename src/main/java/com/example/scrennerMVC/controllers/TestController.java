@@ -84,14 +84,23 @@ public class TestController {
 
     @RequestMapping(value = "/newquestion/{testId}", method = RequestMethod.POST)
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
-                                     @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session) {
+                                     @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session, @RequestParam String question2, @RequestParam Boolean matchingOpposite) {
 
-        if (errors.hasErrors() || (desiredAnswer1 == null) || (desiredAnswer2 == null)) {
-            System.out.println("made it in");
-            if (errors.hasErrors() || ((desiredAnswer1 == null) || (desiredAnswer2 == null))) {
-                System.out.println("made it in to the second");
+        if (errors.hasErrors() || desiredAnswer1 == null || question2 == null || desiredAnswer2 == null || desiredAnswer2 != null ) {
+            if (errors.hasErrors() || desiredAnswer1 == null){
+                System.out.println("made it in to the first");
                 model.addAttribute("title", "New Question");
                 model.addAttribute("claimedError", "Please Select a Desired Answer");
+                model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
+                return "test/newQuestion";
+            }
+
+            if (question2.length() >= 3 && desiredAnswer2 == null){
+                model.addAttribute("desiredAnswer2Error", "Please Select a Desired Answer");
+                System.out.println("made it in to the second");
+                model.addAttribute("title", "New Question");
+                model.addAttribute(new Question());
+                model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
 
                 return "test/newQuestion";
             }
@@ -100,15 +109,59 @@ public class TestController {
                 System.out.println("made it in to the third");
                 model.addAttribute("title", "New Question");
                 model.addAttribute(new Question());
+                model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
+
                 return "test/newQuestion";
             }
 
+            if ((question2.length() > 0 && question2.length() < 3) && desiredAnswer2 == null){
+                System.out.println("4th!");
+                model.addAttribute("title", "New Question");
+                model.addAttribute("desiredAnswer2Error", "Please Select a Second Desired Answer");
+                model.addAttribute("question2Error", "Please Write a Longer Question (at least 3 characters)");
+                model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
+
+
+
+
+                return "test/newQuestion";
+            }
+
+            if ((question2.length()>0 && question2.length() < 3) && desiredAnswer2 != null){
+                System.out.println("5th!");
+
+                model.addAttribute("title", "New Question");
+                model.addAttribute("question2Error", "Please Write a Longer Question (at least 3 characters)");
+                model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
+
+
+
+                return "test/newQuestion";
+            }
         }
+
+
+
+
+
         System.out.println("made it out?");
+
+        if (question2 == "" && desiredAnswer2 == null){
+            question2 = null;
+            desiredAnswer2 = null;
+            matchingOpposite = null;
+
+
+        }
+
+
 
         questionDao.save(question);
         Test currentTest = testDao.findOne(testId);
         Question currentQuestionSet = questionDao.findOne(question.getId());
+        currentQuestionSet.setQuestion2(question2);
+        currentQuestionSet.setDesiredAnswer2(desiredAnswer2);
+        currentQuestionSet.setMatchingOpposite(matchingOpposite);
         questionDao.save(currentQuestionSet);
         currentQuestionSet.setTest(currentTest);
 
@@ -120,26 +173,26 @@ public class TestController {
 
 
         String stringTestId = Integer.toString(testId);
-
-
-        User currentUser = (User) session.getAttribute("loggedInUser");
-
-        Answer anAnswer = new Answer();
-
-        int aNumber = 1;
-
-        anAnswer.setAnswer(aNumber);
-        anAnswer.setMatchingAnswer(aNumber);
-        anAnswer.setQuestion(currentQuestionSet);
-        anAnswer.setUser(currentUser);
-
-        HashMap<Question, Answer> answerMap = new HashMap<>();
-
-        answerMap.put(currentQuestionSet, anAnswer);
-
-        answerDao.save(anAnswer);
-
-        userDao.save(currentUser);
+//
+//
+//        User currentUser = (User) session.getAttribute("loggedInUser");
+//
+//        Answer anAnswer = new Answer();
+//
+//        int aNumber = 1;
+//
+//        anAnswer.setAnswer(aNumber);
+//        anAnswer.setMatchingAnswer(aNumber);
+//        anAnswer.setQuestion(currentQuestionSet);
+//        anAnswer.setUser(currentUser);
+//
+//        HashMap<Question, Answer> answerMap = new HashMap<>();
+//
+//        answerMap.put(currentQuestionSet, anAnswer);
+//
+//        answerDao.save(anAnswer);
+//
+//        userDao.save(currentUser);
 
 
         return "redirect:/test/newquestion/" + stringTestId;

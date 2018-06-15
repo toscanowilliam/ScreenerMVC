@@ -344,6 +344,10 @@ body {
 
 body {
   padding-top: 54px;
+  min-height: 100vh;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
 }
 
 @media (min-width: 992px) {

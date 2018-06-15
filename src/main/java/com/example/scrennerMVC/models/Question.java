@@ -19,8 +19,6 @@ public class Question {
     @Size(min = 3, message = "Please add a question")
     private String question1;
 
-    @NotNull
-    @Size(min=3, message = "Please add a question")
     private String question2;
 
     private Integer desiredAnswer1;

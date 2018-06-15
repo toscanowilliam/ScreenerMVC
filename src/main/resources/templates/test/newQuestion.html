@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments :: head"></head>
-<body>
+<body style="min-height: 100vh; display: flex; flex-flow: column;
+  justify-content: space-between">
 
 
 <nav th:replace="fragments :: navigation"></nav>
@@ -10,6 +11,7 @@
 
 <div class="container">
     <h1 th:text="${title}">Default Title</h1>
+    <h2 th:text="${isError}">Error</h2>
     <form method="post" style="max-width:600px;" th:object="${question}" id="myForm">
         <div class="form-group">
             <label th:for="question1">Question 1</label>
@@ -18,7 +20,7 @@
         </div>
         <div class="form-group">
             <br></br>
-            <label th:for="desiredAnswer1">Desired Answer 1</label>
+            <label th:for="desiredAnswer1">Select the First Answer You'd Prefer the Employee to Answer</label>
             <br></br>
             <input type="radio" th:field="*{{desiredAnswer1}}" th:value="1" /> Always True
             <br></br>
@@ -38,13 +40,13 @@
             <div class="form-group">
                 <label th:for="question2">Question 2</label>
                 <input class="form-control" th:field="*{question2}" />
-                <span th:errors="*{question2}" class="error"></span>
+                <span th:text="${question2Error}" class="error"></span>
             </div>
             <br></br>
 
             <div class="form-group">
                 <br></br>
-                <label th:for="desiredAnswer2">Desired Answer 2</label>
+                <label th:for="desiredAnswer2">Select the Second Answer You'd Prefer the Employee to Answer</label>
                 <br></br>
                 <input type="radio" th:field="*{{desiredAnswer2}}" th:value="1" /> Always True
                 <br></br>
@@ -56,7 +58,7 @@
                 <br></br>
                 <input type="radio" th:field="*{{desiredAnswer2}}" th:value="5" /> Always False
                 <br></br>
-                <span th:text="${claimedError}" class="error"></span>
+                <span th:text="${desiredAnswer2Error}" class="error"></span>
             </div>
             <div>
                 <br></br>
@@ -81,6 +83,8 @@
     </form>
 </div>
 <div th:replace="fragments :: javascript"></div>
-</body>
 <footer th:replace="fragments :: footer"></footer>
+
+</body>
+
 </html>

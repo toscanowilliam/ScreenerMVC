@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments :: head"></head>
-<body>
+<body style="min-height: 100vh; display: flex; flex-flow: column;
+  justify-content: space-between">
 
 
 <nav th:replace="fragments :: navigation"></nav>
 
-<div style="height: 110px;"></div>
+
 
 <div class="container">
     <h1 th:text="${title}">Default Title</h1>
@@ -25,6 +26,8 @@
         <input type="submit" value="Create Test!" />
     </form>
 </div>
-</body>
+
 <footer th:replace="fragments :: footer"></footer>
+
+</body>
 </html>

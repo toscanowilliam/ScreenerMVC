@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments :: head"></head>
-<body>
+<body style="min-height: 100vh; display: flex; flex-flow: column;
+  justify-content: space-between">
 
 
 <nav th:replace="fragments :: navigation"></nav>
@@ -15,7 +16,7 @@
                 <h2 th:text="${question.question1}" class="list-group-item-heading">User Display Name</h2>
                 <div class="form-group">
                     <br></br>
-                    <label th:for="desiredAnswer1">Desired Answer 1</label>
+                    <label th:for="desiredAnswer1">Desired Answer</label>
                     <br></br>
                     <!--maybe put div for each hidden input?-->
                     <!--iter. index is so that each name is different, so we can click one button per question.-->
@@ -71,9 +72,9 @@
 
         <div th:each="question2, iter : ${currentMatchingTestQuestions}" name="questions" class="list-group">
             <h2 th:text="${question2.question2}" class="list-group-item-heading">User Display Name</h2>
-            <div class="form-group">
+            <div th:if="${question2.question2 != NULL}" class="form-group">
                 <br></br>
-                <label th:for="desiredAnswer1">Desired Answer 1</label>
+                <label th:for="desiredAnswer1">Desired Answersss</label>
                 <br></br>
                 <!--maybe put div for each hidden input?-->
                 <!--iter. index is so that each name is different, so we can click one button per question.-->
@@ -124,6 +125,7 @@
                 <input type="hidden" th:name="userAnswer" th:value="5" class="userAnswers"/>
 
             </div>
+
 
 
         </div>    <br></br>
