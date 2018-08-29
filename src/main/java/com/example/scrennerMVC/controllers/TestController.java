@@ -86,6 +86,9 @@ public class TestController {
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
                                      @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session, @RequestParam String question2, @RequestParam Boolean matchingOpposite) {
 
+
+        //Boolean hasMatch = true;
+
         if (errors.hasErrors() || desiredAnswer1 == null || question2 == null || desiredAnswer2 == null || desiredAnswer2 != null ) {
             if (errors.hasErrors() || desiredAnswer1 == null){
                 System.out.println("made it in to the first");
@@ -141,19 +144,15 @@ public class TestController {
         }
 
 
-
-
-
         System.out.println("made it out?");
 
         if (question2 == "" && desiredAnswer2 == null){
+
             question2 = null;
             desiredAnswer2 = null;
             matchingOpposite = null;
 
-
         }
-
 
 
         questionDao.save(question);
@@ -193,7 +192,6 @@ public class TestController {
 //        answerDao.save(anAnswer);
 //
 //        userDao.save(currentUser);
-
 
         return "redirect:/test/newquestion/" + stringTestId;
 
@@ -246,59 +244,159 @@ public class TestController {
 
         User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
-        List<Question> currentTestQuestions = currentTest.getQuestions();
+      //  List<Question> currentTestQuestions = currentTest.getQuestions();
 
-        int arraySize = allAnswers.length;
+        Boolean foundMatch = false;
+
+
+       // int arraySizeOfAllAnswers = allAnswers.length;
 
         int aPosition = 0;
 
+//        List<Integer> listOfNonDuplicates = new ArrayList<>();
+
+
+
+
+
+//        for(int i =0; i<questionIds.length; i++){
+//            int currentQuestionId = Integer.parseInt(questionIds[i]);
+//            for(int j = i +1; j < questionIds.length; i++){
+//                if (currentQuestionId != Integer.parseInt(questionIds[j])){
+//                    continue;
+//                }
+//                if (){
+//
+//                }
+//            }
+//        }
+            eachAnswer:
             for (String answer : allAnswers) {
 
+
                 Answer currentAnswer = new Answer();
-                int currentAnswerInt = Integer.parseInt(answer);
+                int currentAnswerInt = Integer.parseInt(answer); //answer is a string of a number and here it converts to int
 
-                String questionId = questionIds[aPosition];
-                int questionIdInt = Integer.parseInt(questionId);
+                String currentQuestionId = questionIds[aPosition]; //finds the first questionId by the current position
+                int currentQuestionIdInt = Integer.parseInt(currentQuestionId); //converts the questionId to an int
 
 
-                Question currentQuestion = questionDao.findOne(questionIdInt);
+                Question currentQuestion = questionDao.findOne(currentQuestionIdInt); //assign "currentQuestion" by the currentQuestionId in the list
 
                 currentAnswer.setUser(currentUser);
                 currentAnswer.setQuestion(currentQuestion);
                 currentAnswer.setCurrentTest(currentTest);
-                currentAnswer.setAnswer(currentAnswerInt);
-                if (aPosition < arraySize/2) { //can be refactored to top
-                    System.out.println("yay!");
-                    for (int i = questionIds.length / 2; i < questionIds.length; i++) { // i is the position in questionIds after halfway
-                        System.out.println("yay! for loop!");
+                currentAnswer.setAnswer(currentAnswerInt); //sets currentAnswer with all CURRENTLY KNOWN attributes
+                currentAnswer.setMatchingAnswer(null);
 
-                        if (Integer.parseInt(questionIds[i]) == Integer.parseInt(questionId)) {
-                            System.out.println("yay! for loop! and second If statement!");
+//                List<Integer> list = new ArrayList<>();
+//                Integer num = new Integer(Arrays.asList(questionIds).indexOf(currentQuestionId));
 
-                            String matchingAnswer = allAnswers[i];
-                            int matchingAnswerInt = Integer.parseInt(matchingAnswer);
+                Map<Integer, Integer> positionOfMatchingQuestionIds = new HashMap<Integer, Integer>();
 
+                //int numberOfNonMatchingQuestions = 0;
 
-                            currentAnswer.setMatchingAnswer(matchingAnswerInt);
-                        }
+                mapper:
+                for (int i = 0; i < questionIds.length; i++){
+
+                    //Question checkQuestion = questionDao.findOne(i);
+                    if (questionDao.findOne(Integer.parseInt(questionIds[i])).getMatchingOpposite() == null){
+                      //  numberOfNonMatchingQuestions +=1;
+                        continue mapper;
                     }
-                }
-                else{
-                    return "redirect:/home";
+                    positionOfMatchingQuestionIds.put(Integer.parseInt(questionIds[i]), i);
                 }
 
-                Map<Question, Answer> answerMap = new HashMap<>();
-                currentUser.setAnswers(answerMap);
+                label:
+                for (Map.Entry<Integer,Integer> entry : positionOfMatchingQuestionIds.entrySet()){
+                    Integer matchingQuestionId = entry.getKey();
+                    Integer value = entry.getValue();
+
+                    if (matchingQuestionId == currentQuestionIdInt){
+                        currentAnswer.setMatchingAnswer(Integer.parseInt(allAnswers[value]));
+                        if ((questionIds.length - (questionIds.length/2) == aPosition)){
+                            break eachAnswer;
+                        }
+
+                        break label;
+                    }
+                 }
+
+
+
+               // System.out.print(positionOfMatchingQuestionIds);
+
+
+
+//                for (int i = 0; i < questionIds.length; i++){
+//                    if (currentQuestionIdInt == Integer.parseInt(questionIds[i])){
+//                        currentAnswer.setMatchingAnswer(Integer.parseInt(allAnswers[i]));
+//                        foundMatch = true;
+//                        break;
+//                    }
+//                }
+//                if (foundMatch = false){currentAnswer.setMatchingAnswer(null);}
+//                foundMatch = false;
+
+                aPosition += 1;
+
+
+//                Map<Question, Answer> answerMap = new HashMap<>();
+//                answerMap.put(currentQuestion,currentAnswer);
+
+//                currentUser.setAnswers(answerMap);
 
                 answerDao.save(currentAnswer);
                 userDao.save(currentUser);
 
-                aPosition += 1;
             }
+
+//                if (arraySizeOfAllAnswers % 2 == 0) {
+//
+//
+//                    if (aPosition < (arraySizeOfAllAnswers +1)) { //can be refactored to top //this was written assuming every question was going to have a matching question.
+//
+//
+//                        System.out.println("yay!");
+//                        for (int i = 0; i < questionIds.length; i++) { // i is the position in questionIds after halfway
+//                            System.out.println("yay! for loop!");
+//
+//                            if (Integer.parseInt(questionIds[i]) == Integer.parseInt(currentQuestionId)) { //if the current position in questionIDs is equal to the currentQuestionID
+//                                System.out.println("yay! for loop! and second If statement!");
+//
+//                                String matchingAnswer = allAnswers[i];
+//                                int matchingAnswerInt = Integer.parseInt(matchingAnswer);
+//
+//                                currentAnswer.setMatchingAnswer(matchingAnswerInt);
+//                            }
+//                        }
+//                    }
+//                    else    { return "redirect:/home"; }
+//
+//                    Map<Question, Answer> answerMap = new HashMap<>();
+//                    currentUser.setAnswers(answerMap);
+//
+//                    answerDao.save(currentAnswer);
+//                    userDao.save(currentUser);
+//
+//                    aPosition += 1;
+//                    }
+//                }
 
             processScore(allAnswers, questionIds);
 
             return "redirect:/home";
+    }
+
+    public static boolean moreThanOnce(ArrayList<Integer> list, int searched)
+    {
+        int numCount = 0;
+
+        for (int thisNum : list) {
+            if (thisNum == searched) numCount++;
+        }
+
+        return numCount > 1;
     }
 
 

@@ -27,6 +27,8 @@ public class Question {
 
     private Boolean matchingOpposite;
 
+//    private Boolean hasMatch;
+
     @ManyToOne
     private Test test;
 
@@ -37,7 +39,6 @@ public class Question {
 
     public Question() {
     }
-
 
     public int getId() {
         return id;
@@ -63,7 +64,6 @@ public class Question {
         this.question2 = question2;
     }
 
-
     public Integer getDesiredAnswer1() {
         return desiredAnswer1;
     }
@@ -76,8 +76,7 @@ public class Question {
         return desiredAnswer2;
     }
 
-    public void setDesiredAnswer2(Integer desiredAnswer2) {
-        this.desiredAnswer2 = desiredAnswer2; }
+    public void setDesiredAnswer2(Integer desiredAnswer2) { this.desiredAnswer2 = desiredAnswer2; }
 
     public Boolean getMatchingOpposite() {
         return matchingOpposite;
@@ -94,6 +93,10 @@ public class Question {
     public void setTest(Test test) {
         this.test = test;
     }
+
+//    public Boolean getHasMatch() { return hasMatch; }
+//
+//    public void setHasMatch(Boolean hasMatch) { this.hasMatch = hasMatch; }
 
 
 }

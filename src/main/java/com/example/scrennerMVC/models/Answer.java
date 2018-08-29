@@ -16,7 +16,7 @@ public class Answer {
 
     private int answer;
 
-    private int matchingAnswer;
+    private Integer matchingAnswer;
 
     @ManyToOne
     private User user; //user who answers questions
@@ -66,11 +66,11 @@ public class Answer {
         this.question = question;
     }
 
-    public int getMatchingAnswer() {
+    public Integer getMatchingAnswer() {
         return matchingAnswer;
     }
 
-    public void setMatchingAnswer(int matchingAnswer) {
+    public void setMatchingAnswer(Integer matchingAnswer) {
         this.matchingAnswer = matchingAnswer;
     }
 
