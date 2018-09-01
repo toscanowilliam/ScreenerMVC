@@ -50,7 +50,6 @@ public class TestController {
     @RequestMapping(value = "/newtest", method = RequestMethod.POST)
     public String processAddTest(Model model, @ModelAttribute @Valid Test test, BindingResult errors, HttpSession session) {
 
-
         if (errors.hasErrors()) {
             model.addAttribute("title", "New Test");
             return "test/newTest";
@@ -78,16 +77,12 @@ public class TestController {
 
         return "test/newQuestion";
 
-
     }
 
 
     @RequestMapping(value = "/newquestion/{testId}", method = RequestMethod.POST)
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
                                      @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session, @RequestParam String question2, @RequestParam Boolean matchingOpposite) {
-
-
-        //Boolean hasMatch = true;
 
         if (errors.hasErrors() || desiredAnswer1 == null || question2 == null || desiredAnswer2 == null || desiredAnswer2 != null ) {
             if (errors.hasErrors() || desiredAnswer1 == null){
@@ -124,9 +119,6 @@ public class TestController {
                 model.addAttribute("question2Error", "Please Write a Longer Question (at least 3 characters)");
                 model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
 
-
-
-
                 return "test/newQuestion";
             }
 
@@ -137,23 +129,17 @@ public class TestController {
                 model.addAttribute("question2Error", "Please Write a Longer Question (at least 3 characters)");
                 model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
 
-
-
                 return "test/newQuestion";
             }
         }
 
-
         System.out.println("made it out?");
 
         if (question2 == "" && desiredAnswer2 == null){
-
             question2 = null;
             desiredAnswer2 = null;
             matchingOpposite = null;
-
         }
-
 
         questionDao.save(question);
         Test currentTest = testDao.findOne(testId);
@@ -172,26 +158,6 @@ public class TestController {
 
 
         String stringTestId = Integer.toString(testId);
-//
-//
-//        User currentUser = (User) session.getAttribute("loggedInUser");
-//
-//        Answer anAnswer = new Answer();
-//
-//        int aNumber = 1;
-//
-//        anAnswer.setAnswer(aNumber);
-//        anAnswer.setMatchingAnswer(aNumber);
-//        anAnswer.setQuestion(currentQuestionSet);
-//        anAnswer.setUser(currentUser);
-//
-//        HashMap<Question, Answer> answerMap = new HashMap<>();
-//
-//        answerMap.put(currentQuestionSet, anAnswer);
-//
-//        answerDao.save(anAnswer);
-//
-//        userDao.save(currentUser);
 
         return "redirect:/test/newquestion/" + stringTestId;
 
@@ -206,7 +172,6 @@ public class TestController {
         Test currentTest = testDao.findOne(testId);
 
         List<Question> currentMatchingTestQuestions1 = currentTest.getQuestions();
-
 
         int totalElements = currentMatchingTestQuestions1.size();
         // initialize random number generator
@@ -244,42 +209,17 @@ public class TestController {
 
         User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
-      //  List<Question> currentTestQuestions = currentTest.getQuestions();
-
-        Boolean foundMatch = false;
-
-
-       // int arraySizeOfAllAnswers = allAnswers.length;
 
         int aPosition = 0;
 
-//        List<Integer> listOfNonDuplicates = new ArrayList<>();
-
-
-
-
-
-//        for(int i =0; i<questionIds.length; i++){
-//            int currentQuestionId = Integer.parseInt(questionIds[i]);
-//            for(int j = i +1; j < questionIds.length; i++){
-//                if (currentQuestionId != Integer.parseInt(questionIds[j])){
-//                    continue;
-//                }
-//                if (){
-//
-//                }
-//            }
-//        }
             eachAnswer:
             for (String answer : allAnswers) {
-
 
                 Answer currentAnswer = new Answer();
                 int currentAnswerInt = Integer.parseInt(answer); //answer is a string of a number and here it converts to int
 
                 String currentQuestionId = questionIds[aPosition]; //finds the first questionId by the current position
                 int currentQuestionIdInt = Integer.parseInt(currentQuestionId); //converts the questionId to an int
-
 
                 Question currentQuestion = questionDao.findOne(currentQuestionIdInt); //assign "currentQuestion" by the currentQuestionId in the list
 
@@ -289,17 +229,10 @@ public class TestController {
                 currentAnswer.setAnswer(currentAnswerInt); //sets currentAnswer with all CURRENTLY KNOWN attributes
                 currentAnswer.setMatchingAnswer(null);
 
-//                List<Integer> list = new ArrayList<>();
-//                Integer num = new Integer(Arrays.asList(questionIds).indexOf(currentQuestionId));
-
                 Map<Integer, Integer> positionOfMatchingQuestionIds = new HashMap<Integer, Integer>();
-
-                //int numberOfNonMatchingQuestions = 0;
 
                 mapper:
                 for (int i = 0; i < questionIds.length; i++){
-
-                    //Question checkQuestion = questionDao.findOne(i);
                     if (questionDao.findOne(Integer.parseInt(questionIds[i])).getMatchingOpposite() == null){
                       //  numberOfNonMatchingQuestions +=1;
                         continue mapper;
@@ -310,11 +243,11 @@ public class TestController {
                 label:
                 for (Map.Entry<Integer,Integer> entry : positionOfMatchingQuestionIds.entrySet()){
                     Integer matchingQuestionId = entry.getKey();
-                    Integer value = entry.getValue();
+                    Integer value = entry.getValue(); //position
 
                     if (matchingQuestionId == currentQuestionIdInt){
                         currentAnswer.setMatchingAnswer(Integer.parseInt(allAnswers[value]));
-                        if ((questionIds.length - (questionIds.length/2) == aPosition)){
+                        if ((questionIds.length - (questionIds.length/2) == aPosition)){ //Not sure why but this is the only way I can map answers into the database without duplicating non matching answers.
                             break eachAnswer;
                         }
 
@@ -322,104 +255,265 @@ public class TestController {
                     }
                  }
 
-
-
-               // System.out.print(positionOfMatchingQuestionIds);
-
-
-
-//                for (int i = 0; i < questionIds.length; i++){
-//                    if (currentQuestionIdInt == Integer.parseInt(questionIds[i])){
-//                        currentAnswer.setMatchingAnswer(Integer.parseInt(allAnswers[i]));
-//                        foundMatch = true;
-//                        break;
-//                    }
-//                }
-//                if (foundMatch = false){currentAnswer.setMatchingAnswer(null);}
-//                foundMatch = false;
-
                 aPosition += 1;
-
-
-//                Map<Question, Answer> answerMap = new HashMap<>();
-//                answerMap.put(currentQuestion,currentAnswer);
-
-//                currentUser.setAnswers(answerMap);
 
                 answerDao.save(currentAnswer);
                 userDao.save(currentUser);
 
             }
 
-//                if (arraySizeOfAllAnswers % 2 == 0) {
-//
-//
-//                    if (aPosition < (arraySizeOfAllAnswers +1)) { //can be refactored to top //this was written assuming every question was going to have a matching question.
-//
-//
-//                        System.out.println("yay!");
-//                        for (int i = 0; i < questionIds.length; i++) { // i is the position in questionIds after halfway
-//                            System.out.println("yay! for loop!");
-//
-//                            if (Integer.parseInt(questionIds[i]) == Integer.parseInt(currentQuestionId)) { //if the current position in questionIDs is equal to the currentQuestionID
-//                                System.out.println("yay! for loop! and second If statement!");
-//
-//                                String matchingAnswer = allAnswers[i];
-//                                int matchingAnswerInt = Integer.parseInt(matchingAnswer);
-//
-//                                currentAnswer.setMatchingAnswer(matchingAnswerInt);
-//                            }
-//                        }
-//                    }
-//                    else    { return "redirect:/home"; }
-//
-//                    Map<Question, Answer> answerMap = new HashMap<>();
-//                    currentUser.setAnswers(answerMap);
-//
-//                    answerDao.save(currentAnswer);
-//                    userDao.save(currentUser);
-//
-//                    aPosition += 1;
-//                    }
-//                }
-
-            processScore(allAnswers, questionIds);
+            //Pass in number of Questions as questionsIds.length?
+            processScore(currentUser, currentTest);
 
             return "redirect:/home";
     }
 
-    public static boolean moreThanOnce(ArrayList<Integer> list, int searched)
-    {
-        int numCount = 0;
+    public int processScore(User user, Test test){
 
-        for (int thisNum : list) {
-            if (thisNum == searched) numCount++;
+        User currentUser = userDao.findOne(user.getId());
+        Test currentTest = testDao.findOne(test.getId());
+        int currentTestId = currentTest.getId();
+
+
+
+
+
+        int personalityScore = 0;
+        int consistencyScore = 0; // why do these get updated in the for loop but not the one's below?
+
+
+        int possiblePersonalityScore = 0;
+        int possibleConsistencyScore = 0;
+
+
+        Map<Question, Answer> userAnswers = currentUser.getAnswers(); // i dont know how this only gets the user answers to this test but if it works it works
+
+        Map<Integer, Integer> desiredAnswers1 = new HashMap<>();
+        Map<Integer, Integer> desiredAnswers2 = new HashMap<>();
+
+
+
+        int numberOfQuestionsWithMatch = 0;
+        int numberOfQuestionsWithoutMatch = 0;
+        int numberOfQuestionSets = currentTest.getQuestions().size();
+        int totalNumberOfQuestions = numberOfQuestionsWithMatch + numberOfQuestionsWithoutMatch;
+
+
+
+        int eachQuestionIsWorth = 5;
+
+
+
+
+
+
+
+
+
+
+
+
+
+        for (Map.Entry<Question, Answer> entry : userAnswers.entrySet()){
+
+           if (currentTestId != entry.getValue().getCurrentTest().getId()){
+               System.out.println("Checking if Question is for This Test!");
+               continue;
+           }
+
+
+
+           Answer currentAnswer = entry.getValue();
+           Question currentQuestion = currentAnswer.getQuestion();
+
+           Boolean questionsMatch = currentQuestion.getMatchingOpposite();
+           Boolean hasMatch = false;
+           Boolean consistencyFound = false;
+
+
+           Integer currentDesiredAnswer1 = currentQuestion.getDesiredAnswer1();
+           Integer currentDesiredAnswer2 = currentQuestion.getDesiredAnswer2();
+
+         //  int currentAnswer1 = currentAnswer.getAnswer();
+        //   int currentAnswer2 = currentAnswer.getMatchingAnswer();
+
+
+
+
+           if (currentAnswer.getMatchingAnswer() != null){
+               System.out.println("If current answer has a match");
+               hasMatch = true;
+          //     numberOfQuestionsWithMatch += 1;
+           }
+//           else {
+//          //     numberOfQuestionsWithoutMatch += 1;
+//           }
+
+
+
+            System.out.println("Number of Questions is " +  totalNumberOfQuestions);
+
+
+            System.out.println("possible score of " + possiblePersonalityScore);
+
+
+
+            System.out.println("Each question is Worth " + eachQuestionIsWorth);
+
+
+
+
+
+          // desiredAnswers1.put(currentDesiredAnswer1, currentAnswer1);
+          // desiredAnswers2.put(currentDesiredAnswer2, currentAnswer2);
+
+           if (currentDesiredAnswer1 == currentAnswer.getAnswer()){
+               personalityScore += eachQuestionIsWorth;
+               possiblePersonalityScore += eachQuestionIsWorth;
+               System.out.println("Correct! 1");
+               System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
+               System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+
+           }
+           else{ possiblePersonalityScore += eachQuestionIsWorth; }
+
+            if(hasMatch == true) {
+
+
+               if (currentQuestion.getDesiredAnswer2().equals(currentAnswer.getMatchingAnswer())) { //possible null
+                   System.out.println("Correct! 2");
+
+                   personalityScore += eachQuestionIsWorth;
+                   possiblePersonalityScore += eachQuestionIsWorth;
+
+                   System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
+                   System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+               }
+
+               else{ possiblePersonalityScore += eachQuestionIsWorth; }
+           }
+//           else if (hasMatch == false){
+//               personalityScore += eachQuestionIsWorth;
+//               System.out.println("First else If!");
+//               System.out.println("Consistency score of " + consistencyScore);
+//               System.out.println("Personality Score of " + personalityScore);
+//
+//           }
+
+           if (hasMatch == true) {
+
+
+
+               System.out.println("Now checking for Consistency!");
+
+                if (questionsMatch == true && currentAnswer.getAnswer().equals(currentAnswer.getMatchingAnswer())) { //possible null
+                    consistencyScore += eachQuestionIsWorth;
+                    possibleConsistencyScore += eachQuestionIsWorth;
+
+                    System.out.println("Is Consistent! 1");
+                    System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
+                    System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+
+
+                }
+                else if (questionsMatch == true && currentAnswer.getAnswer() != currentAnswer.getMatchingAnswer()){
+                    possibleConsistencyScore += eachQuestionIsWorth;
+                    System.out.println("Else consistent! 1");
+                    System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
+                    System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);}
+
+
+               System.out.println("Now checking for furthur Consistency!");
+
+
+               if (questionsMatch == false){
+
+
+
+
+
+                   if (currentAnswer.getAnswer()==1 && currentAnswer.getMatchingAnswer()==5 ){
+                       consistencyScore +=eachQuestionIsWorth;
+                       possibleConsistencyScore += eachQuestionIsWorth;
+                       consistencyFound = true;
+                       System.out.println("Is Consistent! 2");}
+
+                   if (currentAnswer.getAnswer()==2 && currentAnswer.getMatchingAnswer()==4){ consistencyScore +=eachQuestionIsWorth;
+                       possibleConsistencyScore += eachQuestionIsWorth;
+                       consistencyFound = true;
+                       System.out.println("Is Consistent! 2");}
+
+                   if (currentAnswer.getAnswer()==3 && currentAnswer.getMatchingAnswer()==3){ consistencyScore +=eachQuestionIsWorth;
+                       possibleConsistencyScore += eachQuestionIsWorth;
+                       consistencyFound = true;
+                       System.out.println("Is Consistent! 2");}
+
+                   if (currentAnswer.getAnswer()==4 && currentAnswer.getMatchingAnswer()==2){ consistencyScore +=eachQuestionIsWorth;
+                       possibleConsistencyScore += eachQuestionIsWorth;
+                       consistencyFound = true;
+                       System.out.println("Is Consistent! 2");}
+
+                   if (currentAnswer.getAnswer()==5 && currentAnswer.getMatchingAnswer()==1){ consistencyScore +=eachQuestionIsWorth;
+                       possibleConsistencyScore += eachQuestionIsWorth;
+                       consistencyFound = true;
+                       System.out.println("Is Consistent! 2"); }
+
+                   if (consistencyFound = false){
+                       possibleConsistencyScore += eachQuestionIsWorth;
+                       System.out.println("ELSE Consistent! 2");
+                       System.out.println("Final Score:");
+                       System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
+                       System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+                       continue;
+                   }
+
+                   else if (consistencyFound==true) {
+                       System.out.println("ELSE Consistent! 2");
+                       System.out.println("Final Score:");
+                       System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
+                       System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+                       continue;
+                   }
+               }
+
+//                   else { possibleConsistencyScore += eachQuestionIsWorth;
+//                        System.out.println("ELSE Consistent! 2");}
+
+//                   System.out.println("Made it in to the matching opposite check!");
+//                  // System.out.println("Is Consistent!");
+//
+//                   System.out.println("Consistency score of " + consistencyScore);
+//                   System.out.println("Personality Score of " + personalityScore);
+
+
+//               if ((questionsMatch == false && (currentAnswer.getAnswer() == currentAnswer.getMatchingAnswer() + 4 || currentAnswer.getMatchingAnswer() == currentAnswer.getAnswer() - 4 ))){ //possible null //This needs to be reworked!!
+//                   consistencyScore +=eachQuestionIsWorth;
+//
+//               }
+           }
+
+
+//            else if (hasMatch == false){
+//               consistencyScore +=eachQuestionIsWorth;
+//               consistencyScore +=eachQuestionIsWorth;
+//               System.out.println("Made it into the last else if!");
+//               System.out.println("Consistency score of " + consistencyScore);
+//               System.out.println("Personality Score of " + personalityScore);
+//
+//           }
+
+
+
+           System.out.println("Final Score:");
+           System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
+           System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+
+
+
         }
 
-        return numCount > 1;
-    }
 
-
-
-    public int processScore(String allAnswers[], String questionIds[]){
-
-        //Answer currentAnswer = answerDao.findOne(answerId);
-
-        /*
-
-            The second half of allAnswers are question2s, the second half of questionIds are for question 2s.
-            The point is to find the answers that match by checking which has the same questionId by looking at positions.
-            Example: Answer in allAnswers[0] has the questionId of questionsIds[0]. To find the matching answer, we
-                     we find the position in the second half of questionIds that has the same questionId.
-
-                     When we get the position of the duplicate questionId, we use that same position number to get the
-                     answer in allAnswers.
-
-         */
-        int score = 0;
-
-
-        return score;
+        return consistencyScore + personalityScore;
 
 
 

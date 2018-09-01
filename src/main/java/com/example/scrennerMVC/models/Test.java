@@ -63,7 +63,6 @@ public class Test {
         this.questions = questions;
     }
 
-
     public int getId() {
         return id;
     }
@@ -87,7 +86,6 @@ public class Test {
     public void setTestTakers(List<User> testTakers) {
         this.testTakers = testTakers;
     }
-
 
 
 }

@@ -1,8 +1,6 @@
 package com.example.scrennerMVC.models;
 
 
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
 
 
@@ -12,9 +10,9 @@ public class Answer {
 
     @Id
     @GeneratedValue
-    private long id;
+    private int id;
 
-    private int answer;
+    private Integer answer;
 
     private Integer matchingAnswer;
 
@@ -34,19 +32,19 @@ public class Answer {
 
 
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public int getAnswer() {
+    public Integer getAnswer() {
         return answer;
     }
 
-    public void setAnswer(int answer) {
+    public void setAnswer(Integer answer) {
         this.answer = answer;
     }
 

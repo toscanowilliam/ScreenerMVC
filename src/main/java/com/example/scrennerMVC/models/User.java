@@ -14,7 +14,7 @@ public class User {
 
     @Id
     @GeneratedValue
-    int id;
+    private int id;
 
     @NotNull
     @Size(min=5, max=30)
