@@ -36,6 +36,14 @@ public class Test {
     @ManyToMany
     private List<User> testTakers;
 
+    public Test(String testName, String description) {
+        this.testName = testName;
+        this.description = description;
+    }
+
+    public Test() {
+    }
+
 
 
 

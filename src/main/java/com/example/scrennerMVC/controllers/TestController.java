@@ -462,12 +462,77 @@ public class TestController {
 
             userDao.save(currentUser);
 
-
-
-            return consistencyScore + personalityScore;
+            return 0;
 
 
         }
+
+        @RequestMapping(value="/manage", method = RequestMethod.GET)
+        public String displayCreatedTests(Model model, HttpSession session){
+
+            User currentUser = (User) session.getAttribute("loggedInUser");
+
+            Iterable<Test> allTests = testDao.findAll();
+
+            List<Test> allTestsList = toList(allTests);
+
+            List<Test> myTests = new ArrayList<>();
+
+
+            for(Test test : allTestsList){
+                if (test.getTestCreator().getId() == currentUser.getId()){
+                    myTests.add(test);
+                }
+            }
+
+            model.addAttribute("tests",myTests);
+            model.addAttribute("user", currentUser);
+
+            return "test/myTests";
+        }
+
+//        @RequestMapping(value = "/manage/{testId}", method = RequestMethod.GET)
+//        public String manageEmployees(Model model, HttpSession session, @PathVariable int testId){
+//
+//            User currentUser = (User) session.getAttribute("loggedInUser");
+//            Test currentTest = testDao.findOne(testId);
+//
+//
+//            List<User> testTakers = currentTest.getTestTakers();
+//
+////            List<Integer> scoresInts = new ArrayList<>();
+////
+////
+////
+////            Map<User, Integer> scores = new HashMap<>();
+//
+//          //  for(Integer val : )
+//
+////            for (User user : testTakers){
+////                for(Integer val : user.getConsistencyScores().values()){
+////                System.out.println("User: "+ user + " Consistency Score: " + val);
+////                }
+////            }
+//
+//            model.addAttribute("title","Manage Test Takers!");
+//            model.addAttribute("testTakers",testTakers);
+//
+//            return "manage";
+
+        }
+
+        public static <E> List<E> toList(Iterable<E> iterable) {
+            if(iterable instanceof List) {
+                return (List<E>) iterable;
+            }
+            ArrayList<E> list = new ArrayList<E>();
+            if(iterable != null) {
+                for(E e: iterable) {
+                    list.add(e);
+                }
+            }
+            return list;
+    }
 
 
 

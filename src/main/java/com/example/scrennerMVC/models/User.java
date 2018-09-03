@@ -44,10 +44,6 @@ public class User {
     private List<Test> createdTests = new ArrayList<>();
 
 
-
-
-
-
     public int getId() {
         return id;
     }
