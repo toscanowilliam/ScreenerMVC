@@ -37,6 +37,15 @@ public class TestController {
     @Autowired
     UserDao userDao;
 
+    @RequestMapping(value="", method = RequestMethod.GET)
+    public String displayTests(Model model){
+
+        model.addAttribute("title", "Available Tests!");
+        model.addAttribute("tests",testDao.findAll());
+        return "test/allTests";
+
+    }
+
 
     @RequestMapping(value = "/newtest", method = RequestMethod.GET)
     public String displayAddTest(Model model) {
@@ -268,145 +277,100 @@ public class TestController {
             return "redirect:/home";
     }
 
-    public int processScore(User user, Test test){
+    public int processScore(User user, Test test) {
 
         User currentUser = userDao.findOne(user.getId());
         Test currentTest = testDao.findOne(test.getId());
         int currentTestId = currentTest.getId();
 
 
-
-
-
         int personalityScore = 0;
         int consistencyScore = 0; // why do these get updated in the for loop but not the one's below?
 
 
-        int possiblePersonalityScore = 0;
+        int possiblePersonalityScore = 0; //I can refactor this by doing some math first especially with knowledge that Intellij makes false suggestions at times.
         int possibleConsistencyScore = 0;
 
 
         Map<Question, Answer> userAnswers = currentUser.getAnswers(); // i dont know how this only gets the user answers to this test but if it works it works
 
-        Map<Integer, Integer> desiredAnswers1 = new HashMap<>();
-        Map<Integer, Integer> desiredAnswers2 = new HashMap<>();
+//        Map<Integer, Integer> desiredAnswers1 = new HashMap<>();
+//        Map<Integer, Integer> desiredAnswers2 = new HashMap<>();
 
+        //Will soon refactor us of getters with variable names to make IF statements look cleaner.
 
 
         int numberOfQuestionsWithMatch = 0;
         int numberOfQuestionsWithoutMatch = 0;
-        int numberOfQuestionSets = currentTest.getQuestions().size();
+        //int numberOfQuestionSets = currentTest.getQuestions().size();
         int totalNumberOfQuestions = numberOfQuestionsWithMatch + numberOfQuestionsWithoutMatch;
-
 
 
         int eachQuestionIsWorth = 5;
 
 
+        for (Map.Entry<Question, Answer> entry : userAnswers.entrySet()) {
+
+            if (currentTestId != entry.getValue().getCurrentTest().getId()) {
+                System.out.println("Checking if Question is for This Test!");
+                continue;
+            }
 
 
+            Answer currentAnswer = entry.getValue();
+            Question currentQuestion = currentAnswer.getQuestion();
+
+            Boolean questionsMatch = currentQuestion.getMatchingOpposite();
+            Boolean hasMatch = false;
+            Boolean consistencyFound = false;
 
 
+            Integer currentDesiredAnswer1 = currentQuestion.getDesiredAnswer1();
+            Integer currentDesiredAnswer2 = currentQuestion.getDesiredAnswer2();
 
+            if (currentAnswer.getMatchingAnswer() != null) {
+                System.out.println("If current answer has a match");
+                hasMatch = true;
+                //     numberOfQuestionsWithMatch += 1;
+            }
 
-
-
-
-
-
-        for (Map.Entry<Question, Answer> entry : userAnswers.entrySet()){
-
-           if (currentTestId != entry.getValue().getCurrentTest().getId()){
-               System.out.println("Checking if Question is for This Test!");
-               continue;
-           }
-
-
-
-           Answer currentAnswer = entry.getValue();
-           Question currentQuestion = currentAnswer.getQuestion();
-
-           Boolean questionsMatch = currentQuestion.getMatchingOpposite();
-           Boolean hasMatch = false;
-           Boolean consistencyFound = false;
-
-
-           Integer currentDesiredAnswer1 = currentQuestion.getDesiredAnswer1();
-           Integer currentDesiredAnswer2 = currentQuestion.getDesiredAnswer2();
-
-         //  int currentAnswer1 = currentAnswer.getAnswer();
-        //   int currentAnswer2 = currentAnswer.getMatchingAnswer();
-
-
-
-
-           if (currentAnswer.getMatchingAnswer() != null){
-               System.out.println("If current answer has a match");
-               hasMatch = true;
-          //     numberOfQuestionsWithMatch += 1;
-           }
-//           else {
-//          //     numberOfQuestionsWithoutMatch += 1;
-//           }
-
-
-
-            System.out.println("Number of Questions is " +  totalNumberOfQuestions);
+            System.out.println("Number of Questions is " + totalNumberOfQuestions);
 
 
             System.out.println("possible score of " + possiblePersonalityScore);
 
 
-
             System.out.println("Each question is Worth " + eachQuestionIsWorth);
 
+            if (currentDesiredAnswer1.equals(currentAnswer.getAnswer())) {
+                personalityScore += eachQuestionIsWorth;
+                possiblePersonalityScore += eachQuestionIsWorth;
+                System.out.println("Correct! 1");
+                System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
+                System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+
+            } else {
+                possiblePersonalityScore += eachQuestionIsWorth;
+            }
+
+            if (hasMatch) {
 
 
+                if (currentQuestion.getDesiredAnswer2().equals(currentAnswer.getMatchingAnswer())) { //possible null
+                    System.out.println("Correct! 2");
 
+                    personalityScore += eachQuestionIsWorth;
+                    possiblePersonalityScore += eachQuestionIsWorth;
 
-          // desiredAnswers1.put(currentDesiredAnswer1, currentAnswer1);
-          // desiredAnswers2.put(currentDesiredAnswer2, currentAnswer2);
+                    System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
+                    System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+                } else {
+                    possiblePersonalityScore += eachQuestionIsWorth;
+                }
 
-           if (currentDesiredAnswer1 == currentAnswer.getAnswer()){
-               personalityScore += eachQuestionIsWorth;
-               possiblePersonalityScore += eachQuestionIsWorth;
-               System.out.println("Correct! 1");
-               System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
-               System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+                System.out.println("Now checking for Consistency!");
 
-           }
-           else{ possiblePersonalityScore += eachQuestionIsWorth; }
-
-            if(hasMatch == true) {
-
-
-               if (currentQuestion.getDesiredAnswer2().equals(currentAnswer.getMatchingAnswer())) { //possible null
-                   System.out.println("Correct! 2");
-
-                   personalityScore += eachQuestionIsWorth;
-                   possiblePersonalityScore += eachQuestionIsWorth;
-
-                   System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
-                   System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
-               }
-
-               else{ possiblePersonalityScore += eachQuestionIsWorth; }
-           }
-//           else if (hasMatch == false){
-//               personalityScore += eachQuestionIsWorth;
-//               System.out.println("First else If!");
-//               System.out.println("Consistency score of " + consistencyScore);
-//               System.out.println("Personality Score of " + personalityScore);
-//
-//           }
-
-           if (hasMatch == true) {
-
-
-
-               System.out.println("Now checking for Consistency!");
-
-                if (questionsMatch == true && currentAnswer.getAnswer().equals(currentAnswer.getMatchingAnswer())) { //possible null
+                if (questionsMatch && currentAnswer.getAnswer().equals(currentAnswer.getMatchingAnswer())) { //possible null
                     consistencyScore += eachQuestionIsWorth;
                     possibleConsistencyScore += eachQuestionIsWorth;
 
@@ -415,109 +379,97 @@ public class TestController {
                     System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
 
 
-                }
-                else if (questionsMatch == true && currentAnswer.getAnswer() != currentAnswer.getMatchingAnswer()){
+                } else if (questionsMatch && !currentAnswer.getAnswer().equals(currentAnswer.getMatchingAnswer())) {
                     possibleConsistencyScore += eachQuestionIsWorth;
-                    System.out.println("Else consistent! 1");
+                    System.out.println("Else NOT consistent! 1");
                     System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
-                    System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);}
+                    System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+                }
 
 
-               System.out.println("Now checking for furthur Consistency!");
+                System.out.println("Now checking for furthur Consistency!");
 
 
-               if (questionsMatch == false){
+                if (!questionsMatch) {
 
 
+                    if (currentAnswer.getAnswer() == 1 && currentAnswer.getMatchingAnswer() == 5) {
+                        consistencyScore += eachQuestionIsWorth;
+                        possibleConsistencyScore += eachQuestionIsWorth;
+                        consistencyFound = true;
+                        System.out.println("Is Consistent! 2");
+                    }
 
+                    if (currentAnswer.getAnswer() == 2 && currentAnswer.getMatchingAnswer() == 4) {
+                        consistencyScore += eachQuestionIsWorth;
+                        possibleConsistencyScore += eachQuestionIsWorth;
+                        consistencyFound = true;
+                        System.out.println("Is Consistent! 2");
+                    }
 
+                    if (currentAnswer.getAnswer() == 3 && currentAnswer.getMatchingAnswer() == 3) {
+                        consistencyScore += eachQuestionIsWorth;
+                        possibleConsistencyScore += eachQuestionIsWorth;
+                        consistencyFound = true;
+                        System.out.println("Is Consistent! 2");
+                    }
 
-                   if (currentAnswer.getAnswer()==1 && currentAnswer.getMatchingAnswer()==5 ){
-                       consistencyScore +=eachQuestionIsWorth;
-                       possibleConsistencyScore += eachQuestionIsWorth;
-                       consistencyFound = true;
-                       System.out.println("Is Consistent! 2");}
+                    if (currentAnswer.getAnswer() == 4 && currentAnswer.getMatchingAnswer() == 2) {
+                        consistencyScore += eachQuestionIsWorth;
+                        possibleConsistencyScore += eachQuestionIsWorth;
+                        consistencyFound = true;
+                        System.out.println("Is Consistent! 2");
+                    }
 
-                   if (currentAnswer.getAnswer()==2 && currentAnswer.getMatchingAnswer()==4){ consistencyScore +=eachQuestionIsWorth;
-                       possibleConsistencyScore += eachQuestionIsWorth;
-                       consistencyFound = true;
-                       System.out.println("Is Consistent! 2");}
+                    if (currentAnswer.getAnswer() == 5 && currentAnswer.getMatchingAnswer() == 1) {
+                        consistencyScore += eachQuestionIsWorth;
+                        possibleConsistencyScore += eachQuestionIsWorth;
+                        consistencyFound = true;
+                        System.out.println("Is Consistent! 2");
+                    }
 
-                   if (currentAnswer.getAnswer()==3 && currentAnswer.getMatchingAnswer()==3){ consistencyScore +=eachQuestionIsWorth;
-                       possibleConsistencyScore += eachQuestionIsWorth;
-                       consistencyFound = true;
-                       System.out.println("Is Consistent! 2");}
-
-                   if (currentAnswer.getAnswer()==4 && currentAnswer.getMatchingAnswer()==2){ consistencyScore +=eachQuestionIsWorth;
-                       possibleConsistencyScore += eachQuestionIsWorth;
-                       consistencyFound = true;
-                       System.out.println("Is Consistent! 2");}
-
-                   if (currentAnswer.getAnswer()==5 && currentAnswer.getMatchingAnswer()==1){ consistencyScore +=eachQuestionIsWorth;
-                       possibleConsistencyScore += eachQuestionIsWorth;
-                       consistencyFound = true;
-                       System.out.println("Is Consistent! 2"); }
-
-                   if (consistencyFound = false){
-                       possibleConsistencyScore += eachQuestionIsWorth;
-                       System.out.println("ELSE Consistent! 2");
-                       System.out.println("Final Score:");
-                       System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
-                       System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
-                       continue;
-                   }
-
-                   else if (consistencyFound==true) {
-                       System.out.println("ELSE Consistent! 2");
-                       System.out.println("Final Score:");
-                       System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
-                       System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
-                       continue;
-                   }
-               }
-
-//                   else { possibleConsistencyScore += eachQuestionIsWorth;
-//                        System.out.println("ELSE Consistent! 2");}
-
-//                   System.out.println("Made it in to the matching opposite check!");
-//                  // System.out.println("Is Consistent!");
-//
-//                   System.out.println("Consistency score of " + consistencyScore);
-//                   System.out.println("Personality Score of " + personalityScore);
-
-
-//               if ((questionsMatch == false && (currentAnswer.getAnswer() == currentAnswer.getMatchingAnswer() + 4 || currentAnswer.getMatchingAnswer() == currentAnswer.getAnswer() - 4 ))){ //possible null //This needs to be reworked!!
-//                   consistencyScore +=eachQuestionIsWorth;
-//
-//               }
-           }
-
-
-//            else if (hasMatch == false){
-//               consistencyScore +=eachQuestionIsWorth;
-//               consistencyScore +=eachQuestionIsWorth;
-//               System.out.println("Made it into the last else if!");
-//               System.out.println("Consistency score of " + consistencyScore);
-//               System.out.println("Personality Score of " + personalityScore);
-//
-//           }
+                    if (!consistencyFound) {
+                        possibleConsistencyScore += eachQuestionIsWorth;
+                        System.out.println("ELSE Consistent! 2 FALSE" );
+                        System.out.println("Final Score:");
+                        System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
+                        System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
 
 
 
-           System.out.println("Final Score:");
-           System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
-           System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
+                    } else if (consistencyFound) { //when intelliJ says it's always true or false for a Boolean, just ignore it.
+                        System.out.println("ELSE Consistent! 2 TRUE");
+                        System.out.println("Final Score:");
+                        System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
+                        System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
 
+                    }
+                }
+
+
+            }
+
+        }
+
+            Map<Test,Integer> finalPersonalityScore = new HashMap<>();
+            Map<Test,Integer> finalConsitencyScore = new HashMap<>();
+
+            finalPersonalityScore.put(currentTest,personalityScore);
+            finalConsitencyScore.put(currentTest,consistencyScore);
+
+            currentUser.setPersonalityScores(finalPersonalityScore);
+            currentUser.setConsistencyScores(finalConsitencyScore);
+
+            userDao.save(currentUser);
+
+
+
+            return consistencyScore + personalityScore;
 
 
         }
 
 
-        return consistencyScore + personalityScore;
-
-
-
-        }
 
 
 

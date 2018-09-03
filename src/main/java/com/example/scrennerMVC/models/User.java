@@ -24,12 +24,20 @@ public class User {
     @Transient
     private String password;
 
+    private Boolean isEmployer;
+
     @NotNull
     private String pwHash;
 
     @OneToMany(mappedBy = "user")
     @MapKeyJoinColumn(name="QUESTION_ID")
     private Map<Question,Answer> answers = new HashMap<>(); //One User to many answers of questions
+
+    @ElementCollection
+    private Map<Test,Integer> personalityScores = new HashMap<>();
+
+    @ElementCollection
+    private Map<Test,Integer> consistencyScores = new HashMap<>();
 
     @OneToMany
     @JoinColumn(name="test_creator_id")
@@ -88,7 +96,21 @@ public class User {
         this.createdTests = test;
     }
 
+    public Map<Test, Integer> getPersonalityScores() { return personalityScores; }
 
+    public void setPersonalityScores(Map<Test, Integer> personalityScores) { this.personalityScores = personalityScores; }
+
+    public Map<Test, Integer> getConsistencyScores() { return consistencyScores; }
+
+    public void setConsistencyScores(Map<Test, Integer> consistencyScores) { this.consistencyScores = consistencyScores; }
+
+    public List<Test> getCreatedTests() { return createdTests; }
+
+    public void setCreatedTests(List<Test> createdTests) { this.createdTests = createdTests; }
+
+    public Boolean getIsEmployer() { return isEmployer; }
+
+    public void setIsEmployer(Boolean isEmployer) { this.isEmployer = isEmployer; }
 
 
 
