@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org/">
+<html lang="en"
+      xmlns:th="http://thymeleaf.org/">
+      <!--xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
 <head th:fragment="head">
     <meta charset="utf-8"></meta>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
@@ -48,9 +50,14 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/test/newtest">Create Test</a>
                     </li>
-                    <li class="nav-item">
-                    <li th:if="${session.loggedInUser}"><a class="nav-link" href="/test/manage"> My Tests</a></li>
+                    <li th:if="${session.loggedInUser}" class="nav-item">
+                        <!--<div th:unless="${session.loggedInUser}">-->
+                    <li th:if="${session.loggedInUser.getIsEmployer() == false}"><a class="nav-link" href="/test"> All Tests</a></li>
                     </li>
+                    <li th:if="${session.loggedInUser}" class="nav-item">
+                    <li th:if="${session.loggedInUser.getIsEmployer() == true}"><a class="nav-link" href="/test/manage"> My Tests</a></li>
+                    </li>
+                        <!--</div>-->
 
                 </ul>
             </div>

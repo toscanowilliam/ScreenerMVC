@@ -1,13 +1,7 @@
 package com.example.scrennerMVC.controllers;
 
-import com.example.scrennerMVC.models.Answer;
-import com.example.scrennerMVC.models.Question;
-import com.example.scrennerMVC.models.Test;
-import com.example.scrennerMVC.models.User;
-import com.example.scrennerMVC.models.data.AnswerDao;
-import com.example.scrennerMVC.models.data.QuestionDao;
-import com.example.scrennerMVC.models.data.TestDao;
-import com.example.scrennerMVC.models.data.UserDao;
+import com.example.scrennerMVC.models.*;
+import com.example.scrennerMVC.models.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +30,9 @@ public class TestController {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    ScoreDao scoreDao;
 
     @RequestMapping(value="", method = RequestMethod.GET)
     public String displayTests(Model model){
@@ -272,6 +269,15 @@ public class TestController {
             }
 
             //Pass in number of Questions as questionsIds.length?
+
+            List<User> currentTestTakers = currentTest.getTestTakers();
+            currentTestTakers.add(currentUser);
+
+            currentTest.setTestTakers(currentTestTakers);
+
+            testDao.save(currentTest);
+            userDao.save(currentUser);
+
             processScore(currentUser, currentTest);
 
             return "redirect:/home";
@@ -451,16 +457,37 @@ public class TestController {
 
         }
 
-            Map<Test,Integer> finalPersonalityScore = new HashMap<>();
-            Map<Test,Integer> finalConsitencyScore = new HashMap<>();
+//            Map<Test,Integer> finalPersonalityScore = new HashMap<>();
+//            Map<Test,Integer> finalConsitencyScore = new HashMap<>();
 
-            finalPersonalityScore.put(currentTest,personalityScore);
-            finalConsitencyScore.put(currentTest,consistencyScore);
+            currentTest.setPossibleConsistencyScore(possibleConsistencyScore);
+            currentTest.setPossiblePersonalityScore(possiblePersonalityScore);
 
-            currentUser.setPersonalityScores(finalPersonalityScore);
-            currentUser.setConsistencyScores(finalConsitencyScore);
+            testDao.save(currentTest);
 
+            Score finalScore = new Score();
+            finalScore.setConsistencyScore(consistencyScore);
+            finalScore.setPersonalityScore(personalityScore);
+            finalScore.setUser(currentUser);
+
+
+            Map<Test,Score> scores = new HashMap<>();
+
+            scores.put(currentTest,finalScore);
+
+
+            currentUser.setScores(scores);
+
+//
+//            finalPersonalityScore.put(currentTest,personalityScore);
+//            finalConsitencyScore.put(currentTest,consistencyScore);
+
+//            currentUser.setPersonalityScores(finalPersonalityScore);
+//            currentUser.setConsistencyScores(finalConsitencyScore);
+
+            scoreDao.save(finalScore);
             userDao.save(currentUser);
+
 
             return 0;
 
@@ -491,33 +518,69 @@ public class TestController {
             return "test/myTests";
         }
 
-//        @RequestMapping(value = "/manage/{testId}", method = RequestMethod.GET)
-//        public String manageEmployees(Model model, HttpSession session, @PathVariable int testId){
+
+
+
+        @RequestMapping(value = "/manage/{testId}", method = RequestMethod.GET)
+        public String manageEmployees(Model model, HttpSession session, @PathVariable int testId){
+
+            User currentUser = (User) session.getAttribute("loggedInUser");
+            Test currentTest = testDao.findOne(testId);
+
+
+            List<User> testTakers = currentTest.getTestTakers();
+
+            Map<Test,Score> currentTestScores = new HashMap<>();
+
+            Map<User, Score> userScores = new HashMap<>();
+
+
+            for (User testTaker : testTakers){
+                for(Score score : testTaker.getScores().values()){
+                    userScores.put(testTaker,score);
+                }
+            }
+
+
+
+//            List<Integer> consitencyScoreInts = new ArrayList<>();
+//            List<Integer> personalityScoreInts = new ArrayList<>();
+
+//            for (User user : testTakers){
+//                for(Integer score : user.getConsistencyScores().values()){
 //
-//            User currentUser = (User) session.getAttribute("loggedInUser");
-//            Test currentTest = testDao.findOne(testId);
+//                    consitencyScoreInts.add(score);
+//                }
+//                for(Integer score : user.getPersonalityScores().values()){
+//
+//                    personalityScoreInts.add(score);
+//
+//                }
 //
 //
-//            List<User> testTakers = currentTest.getTestTakers();
+//            }
+
+            //Might need to Create Score Object and Creat a Map<Test, Score> in User class.
+
+//            List<Integer> scoresInts = new ArrayList<>();
 //
-////            List<Integer> scoresInts = new ArrayList<>();
-////
-////
-////
-////            Map<User, Integer> scores = new HashMap<>();
 //
-//          //  for(Integer val : )
 //
-////            for (User user : testTakers){
-////                for(Integer val : user.getConsistencyScores().values()){
-////                System.out.println("User: "+ user + " Consistency Score: " + val);
-////                }
-////            }
-//
-//            model.addAttribute("title","Manage Test Takers!");
-//            model.addAttribute("testTakers",testTakers);
-//
-//            return "manage";
+//            Map<User, Integer> scores = new HashMap<>();
+
+          //  for(Integer val : )
+
+//            for (User user : testTakers){
+//                for(Integer val : user.getConsistencyScores().values()){
+//                System.out.println("User: "+ user + " Consistency Score: " + val);
+//                }
+//            }
+
+            model.addAttribute("title","Manage Test Takers!");
+            model.addAttribute("testTakers",testTakers);
+            model.addAttribute("scores",userScores);
+
+            return "test/manage";
 
         }
 

@@ -33,11 +33,15 @@ public class User {
     @MapKeyJoinColumn(name="QUESTION_ID")
     private Map<Question,Answer> answers = new HashMap<>(); //One User to many answers of questions
 
-    @ElementCollection
-    private Map<Test,Integer> personalityScores = new HashMap<>();
+    @OneToMany(mappedBy = "user")
+    @MapKeyJoinColumn(name="TEST_ID")
+    private Map<Test,Score> scores = new HashMap<>(); //One User to many scores of tests
 
-    @ElementCollection
-    private Map<Test,Integer> consistencyScores = new HashMap<>();
+//    @ElementCollection
+//    private Map<Test,Integer> personalityScores = new HashMap<>();
+//
+//    @ElementCollection
+//    private Map<Test,Integer> consistencyScores = new HashMap<>();
 
     @OneToMany
     @JoinColumn(name="test_creator_id")
@@ -92,13 +96,13 @@ public class User {
         this.createdTests = test;
     }
 
-    public Map<Test, Integer> getPersonalityScores() { return personalityScores; }
-
-    public void setPersonalityScores(Map<Test, Integer> personalityScores) { this.personalityScores = personalityScores; }
-
-    public Map<Test, Integer> getConsistencyScores() { return consistencyScores; }
-
-    public void setConsistencyScores(Map<Test, Integer> consistencyScores) { this.consistencyScores = consistencyScores; }
+//    public Map<Test, Integer> getPersonalityScores() { return personalityScores; }
+//
+//    public void setPersonalityScores(Map<Test, Integer> personalityScores) { this.personalityScores = personalityScores; }
+//
+//    public Map<Test, Integer> getConsistencyScores() { return consistencyScores; }
+//
+//    public void setConsistencyScores(Map<Test, Integer> consistencyScores) { this.consistencyScores = consistencyScores; }
 
     public List<Test> getCreatedTests() { return createdTests; }
 
@@ -107,6 +111,10 @@ public class User {
     public Boolean getIsEmployer() { return isEmployer; }
 
     public void setIsEmployer(Boolean isEmployer) { this.isEmployer = isEmployer; }
+
+    public Map<Test, Score> getScores() { return scores; }
+
+    public void setScores(Map<Test, Score> scores) { this.scores = scores; }
 
 
 

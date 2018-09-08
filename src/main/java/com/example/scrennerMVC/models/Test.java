@@ -19,6 +19,10 @@ public class Test {
     @GeneratedValue
     private int id;
 
+    private Integer possibleConsistencyScore;
+
+    private Integer possiblePersonalityScore;
+
     @OneToMany
     private List<Question> questions = new ArrayList<>();
 
@@ -41,8 +45,7 @@ public class Test {
         this.description = description;
     }
 
-    public Test() {
-    }
+    public Test() { }
 
 
 
@@ -94,6 +97,15 @@ public class Test {
     public void setTestTakers(List<User> testTakers) {
         this.testTakers = testTakers;
     }
+
+    public Integer getPossibleConsistencyScore() { return possibleConsistencyScore; }
+
+    public void setPossibleConsistencyScore(Integer possibleConsistencyScore) { this.possibleConsistencyScore = possibleConsistencyScore; }
+
+    public Integer getPossiblePersonalityScore() { return possiblePersonalityScore; }
+
+    public void setPossiblePersonalityScore(Integer possiblePersonalityScore) { this.possiblePersonalityScore = possiblePersonalityScore; }
+
 
 
 }

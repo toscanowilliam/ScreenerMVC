@@ -6,25 +6,16 @@
 
 
 <body>
-<div class="container" >
+<div class="container" th:object="${scores}" >
     <p th:unless="${testTakers} and ${testTakers.size()}">no job seekers took this test! :(</p>
     <p>To create a test, click <a href="/test/newtest"> here</a></p>
     <h1 th:text="${title}">Default Title</h1>
-
-    <div th:each="user : ${testTakers}" class="list-group">
-        <a th:href="@{'/user/profile/' + ${user.id}}" class="list-group-item">
-            <h2 th:text="${user.email}" class="list-group-item-heading">User Display Name</h2>
-            <div th:each="${personalityScore: user.getPersonalityScores()"></div>
-            <h2 th:text="${user.email}" class="list-group-item-heading">User Display Name</h2>
-            <div th:each="${score : user.getConsistencyScores().values()}">
-                <h2 th:text="${user.email}"class="list-group-item-heading"></h2>
-                <h2 th:text="${score}"class="list-group-item-heading"></h2>
-            </div>
-
-            <!--<p th:text="${test.description}" class="list-group-item-text"></p>-->
-            <p>Created by: <span th:text="${test.getTestCreator() == null ? '' : test.getTestCreator().email}"></span></p>
-        </a>
-    </div>
+    <a th:each="instance : ${scores}" class="list-group">
+        <h2>HI!</h2>
+        <a class="list-group-item-heading"><p th:text="${instance.key.getEmail()}">keyvalue</p></a>
+        <p th:text="${instance.value.getPersonalityScore()}">num</p>
+        <p th:text="${instance.value.getConsistencyScore()}">num</p>
+    </a>
 </div>
 <!--<footer th:replace="fragments :: footer"></footer>-->
 </body>
