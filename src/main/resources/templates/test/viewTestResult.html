@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: head"></head>
+<body style="min-height: 100vh; display: flex; flex-flow: column;
+  justify-content: space-between">
+
+
+<nav th:replace="fragments :: navigation"></nav>
+
+<div style="height: 110px;"></div>
+
+
+
+
+<div th:object="${userAnswers}">
+    <table border="1" class="table">
+        <tr>
+            <th>Question</th>
+            <th >Desired Answer</th>
+            <th >Actual Answer</th>
+        </tr>
+        <tr th:each="answer : ${userAnswers}">
+            <td th:text="${answer.getQuestion().getQuestion1()}">A Question</td>
+            <td th:text="${answer.getQuestion().getDesiredAnswer1()}"></td>
+            <td th:text="${answer.getAnswer()}"></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+
+<!--<script type="text/javascript" th:inline="javascript">-->
+
+<!--const selectedAnswers = []-->
+<!--var button = document.getElementByClass("userAnswers");-->
+
+<!--if(button.checked){-->
+<!--("[(${n})]");-->
+<!--}-->
+
+<!--</script>-->
+</html>

@@ -16,6 +16,31 @@
         <p th:text="${instance.value.getPersonalityScore()}">num</p>
         <p th:text="${instance.value.getConsistencyScore()}">num</p>
     </a>
+    <table border="1" class="table">
+        <tr>
+            <th>Test Name</th>
+            <th >Possible Personality Scores</th>
+            <th >Possible Consistency Scores</th>
+            <th >View Test</th>
+
+
+        </tr>
+        <tr>
+            <td th:text="${test.testName}">Test Name</td>
+            <td th:text="${test.possiblePersonalityScore}"></td>
+            <td th:text="${test.possibleConsistencyScore}"></td>
+        </tr>
+        <tr>
+            <th>User</th>
+            <th colspan="2">Score</th>
+        </tr>
+        <tr th:each="score : ${scores}">
+                <td th:text="${score.key.getEmail()}">A Smoke Test'</td>
+                <td th:text="${score.value.getPersonalityScore()}"></td>
+                <td th:text="${score.value.getConsistencyScore()}"></td>
+                <td> <a th:href="@{'/test/manage/' + ${test.id} + '/' + ${score.key.getId()}}">View Test</a></td>
+        </tr>
+    </table>
 </div>
 <!--<footer th:replace="fragments :: footer"></footer>-->
 </body>
