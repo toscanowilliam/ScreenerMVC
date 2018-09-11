@@ -593,35 +593,18 @@ public class TestController {
             Test currentTest = testDao.findOne(testId);
             User testTaker = userDao.findOne(testTakerId);
 
-
-//            List<Question> testQuestions = currentTest.getQuestions();
-
             Map<Question,Answer> userAnswers = testTaker.getAnswers();
-
-//            Map<Question,Answer> testUserAnswers = new HashMap<>();
-
-//            Map<Question,Answer> testDesiredAnswers = new HashMap<>();
 
             List<Answer> userCurrentTestAnswers = new ArrayList<>();
 
-//            for(Question question : testQuestions){
-//                Answer answer = new Answer();
-//                answer.setAnswer(question.getDesiredAnswer1());
-//                answer.setAnswer(question.getDesiredAnswer2());
-//                testDesiredAnswers.put(question,answer);
-//            }
-
             for(Map.Entry<Question,Answer> answer : userAnswers.entrySet()) {
                 if (answer.getKey().getTest() == currentTest) {
-//                    testUserAnswers.put(answer.getKey(), answer.getValue());
                     userCurrentTestAnswers.add(answer.getValue());
                 }
             }
 
-//            model.addAttribute("testQuestions", testQuestions);
             model.addAttribute("userAnswers",userCurrentTestAnswers);
-//            model.addAttribute("desiredAnswers", testDesiredAnswers);
-
+            model.addAttribute("user", testTaker);
 
             return "test/viewTestResult";
 

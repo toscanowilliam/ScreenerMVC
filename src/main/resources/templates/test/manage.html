@@ -5,17 +5,12 @@
 <nav th:replace="fragments :: navigation"></nav>
 
 
-<body>
+<body style="min-height: 100vh; display: flex; flex-flow: column;
+  justify-content: space-between">
 <div class="container" th:object="${scores}" >
     <p th:unless="${testTakers} and ${testTakers.size()}">no job seekers took this test! :(</p>
     <p>To create a test, click <a href="/test/newtest"> here</a></p>
     <h1 th:text="${title}">Default Title</h1>
-    <a th:each="instance : ${scores}" class="list-group">
-        <h2>HI!</h2>
-        <a class="list-group-item-heading"><p th:text="${instance.key.getEmail()}">keyvalue</p></a>
-        <p th:text="${instance.value.getPersonalityScore()}">num</p>
-        <p th:text="${instance.value.getConsistencyScore()}">num</p>
-    </a>
     <table border="1" class="table">
         <tr>
             <th>Test Name</th>
@@ -38,10 +33,10 @@
                 <td th:text="${score.key.getEmail()}">A Smoke Test'</td>
                 <td th:text="${score.value.getPersonalityScore()}"></td>
                 <td th:text="${score.value.getConsistencyScore()}"></td>
-                <td> <a th:href="@{'/test/manage/' + ${test.id} + '/' + ${score.key.getId()}}">View Test</a></td>
+                <td> <a th:href="@{'/test/manage/' + ${test.id} + '/' + ${score.key.getId()}}">View Questions And Answers</a></td>
         </tr>
     </table>
 </div>
-<!--<footer th:replace="fragments :: footer"></footer>-->
+<footer th:replace="fragments :: footer"></footer>
 </body>
 </html>
