@@ -2,14 +2,14 @@ package com.example.scrennerMVC.controllers;
 
 import com.example.scrennerMVC.models.*;
 import com.example.scrennerMVC.models.data.*;
+import org.hibernate.annotations.MapKeyType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.validation.Errors;
 
+import javax.persistence.MapKeyColumn;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.*;
@@ -91,22 +91,21 @@ public class TestController {
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
                                      @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session, @RequestParam String question2, @RequestParam Boolean matchingOpposite) {
 
-        if (errors.hasErrors() || desiredAnswer1 == null || question2 == null || desiredAnswer2 == null || desiredAnswer2 != null ) {
+        if (question2.equals("")){
+            question2 = null;
+            desiredAnswer2 = null;
+            matchingOpposite = null; //rename this to "matches"
+        }
+        else if (question2.length() > 3){
+            desiredAnswer2 = createMatchingAnswer(desiredAnswer1, matchingOpposite);
+        }
+
+        if (errors.hasErrors() || desiredAnswer1 == null || (question2 != null && (question2.length() > 0 && question2.length() < 3))) {
             if (errors.hasErrors() || desiredAnswer1 == null){
                 System.out.println("made it in to the first");
                 model.addAttribute("title", "New Question");
                 model.addAttribute("claimedError", "Please Select a Desired Answer");
                 model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
-                return "test/newQuestion";
-            }
-
-            if (question2.length() >= 3 && desiredAnswer2 == null){
-                model.addAttribute("desiredAnswer2Error", "Please Select a Desired Answer");
-                System.out.println("made it in to the second");
-                model.addAttribute("title", "New Question");
-                model.addAttribute(new Question());
-                model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
-
                 return "test/newQuestion";
             }
 
@@ -119,17 +118,7 @@ public class TestController {
                 return "test/newQuestion";
             }
 
-            if ((question2.length() > 0 && question2.length() < 3) && desiredAnswer2 == null){
-                System.out.println("4th!");
-                model.addAttribute("title", "New Question");
-                model.addAttribute("desiredAnswer2Error", "Please Select a Second Desired Answer");
-                model.addAttribute("question2Error", "Please Write a Longer Question (at least 3 characters)");
-                model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
-
-                return "test/newQuestion";
-            }
-
-            if ((question2.length()>0 && question2.length() < 3) && desiredAnswer2 != null){
+            if (question2.length()>0 && question2.length() < 3){
                 System.out.println("5th!");
 
                 model.addAttribute("title", "New Question");
@@ -138,14 +127,6 @@ public class TestController {
 
                 return "test/newQuestion";
             }
-        }
-
-        System.out.println("made it out?");
-
-        if (question2 == "" && desiredAnswer2 == null){
-            question2 = null;
-            desiredAnswer2 = null;
-            matchingOpposite = null;
         }
 
         questionDao.save(question);
@@ -301,19 +282,12 @@ public class TestController {
 
         Map<Question, Answer> userAnswers = currentUser.getAnswers(); // i dont know how this only gets the user answers to this test but if it works it works
 
-//        Map<Integer, Integer> desiredAnswers1 = new HashMap<>();
-//        Map<Integer, Integer> desiredAnswers2 = new HashMap<>();
-
-        //Will soon refactor us of getters with variable names to make IF statements look cleaner.
 
 
-        int numberOfQuestionsWithMatch = 0;
-        int numberOfQuestionsWithoutMatch = 0;
-        //int numberOfQuestionSets = currentTest.getQuestions().size();
-        int totalNumberOfQuestions = numberOfQuestionsWithMatch + numberOfQuestionsWithoutMatch;
+        int totalNumberOfQuestions = currentTest.getQuestions().size();
 
 
-        int eachQuestionIsWorth = 5;
+        int eachQuestionIsWorth = 5; //might let user pick this.
 
 
         for (Map.Entry<Question, Answer> entry : userAnswers.entrySet()) {
@@ -329,11 +303,10 @@ public class TestController {
 
             Boolean questionsMatch = currentQuestion.getMatchingOpposite();
             Boolean hasMatch = false;
-            Boolean consistencyFound = false;
 
 
             Integer currentDesiredAnswer1 = currentQuestion.getDesiredAnswer1();
-            Integer currentDesiredAnswer2 = currentQuestion.getDesiredAnswer2();
+            Integer currentDesiredAnswer2 = currentQuestion.getDesiredAnswer2(); //might use these variables for readablility
 
             if (currentAnswer.getMatchingAnswer() != null) {
                 System.out.println("If current answer has a match");
@@ -377,89 +350,14 @@ public class TestController {
 
                 System.out.println("Now checking for Consistency!");
 
-                if (questionsMatch && currentAnswer.getAnswer().equals(currentAnswer.getMatchingAnswer())) { //possible null
-                    consistencyScore += eachQuestionIsWorth;
-                    possibleConsistencyScore += eachQuestionIsWorth;
-
-                    System.out.println("Is Consistent! 1");
-                    System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
-                    System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
-
-
-                } else if (questionsMatch && !currentAnswer.getAnswer().equals(currentAnswer.getMatchingAnswer())) {
-                    possibleConsistencyScore += eachQuestionIsWorth;
-                    System.out.println("Else NOT consistent! 1");
-                    System.out.println("Consistency score of " + consistencyScore + " out of " + possibleConsistencyScore);
-                    System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
-                }
-
-
-                System.out.println("Now checking for furthur Consistency!");
-
-
-                if (!questionsMatch) {
-
-
-                    if (currentAnswer.getAnswer() == 1 && currentAnswer.getMatchingAnswer() == 5) {
-                        consistencyScore += eachQuestionIsWorth;
-                        possibleConsistencyScore += eachQuestionIsWorth;
-                        consistencyFound = true;
-                        System.out.println("Is Consistent! 2");
-                    }
-
-                    if (currentAnswer.getAnswer() == 2 && currentAnswer.getMatchingAnswer() == 4) {
-                        consistencyScore += eachQuestionIsWorth;
-                        possibleConsistencyScore += eachQuestionIsWorth;
-                        consistencyFound = true;
-                        System.out.println("Is Consistent! 2");
-                    }
-
-                    if (currentAnswer.getAnswer() == 3 && currentAnswer.getMatchingAnswer() == 3) {
-                        consistencyScore += eachQuestionIsWorth;
-                        possibleConsistencyScore += eachQuestionIsWorth;
-                        consistencyFound = true;
-                        System.out.println("Is Consistent! 2");
-                    }
-
-                    if (currentAnswer.getAnswer() == 4 && currentAnswer.getMatchingAnswer() == 2) {
-                        consistencyScore += eachQuestionIsWorth;
-                        possibleConsistencyScore += eachQuestionIsWorth;
-                        consistencyFound = true;
-                        System.out.println("Is Consistent! 2");
-                    }
-
-                    if (currentAnswer.getAnswer() == 5 && currentAnswer.getMatchingAnswer() == 1) {
-                        consistencyScore += eachQuestionIsWorth;
-                        possibleConsistencyScore += eachQuestionIsWorth;
-                        consistencyFound = true;
-                        System.out.println("Is Consistent! 2");
-                    }
-
-                    if (!consistencyFound) {
-                        possibleConsistencyScore += eachQuestionIsWorth;
-                        System.out.println("ELSE Consistent! 2 FALSE" );
-                        System.out.println("Final Score:");
-                        System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
-                        System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
-
-
-
-                    } else if (consistencyFound) { //when intelliJ says it's always true or false for a Boolean, just ignore it.
-                        System.out.println("ELSE Consistent! 2 TRUE");
-                        System.out.println("Final Score:");
-                        System.out.println("Consistency score of " + consistencyScore + " Out of " + possibleConsistencyScore);
-                        System.out.println("Personality Score of " + personalityScore + " out of " + possiblePersonalityScore);
-
-                    }
-                }
+                consistencyScore += checkConsistency(currentAnswer.getAnswer(),currentAnswer.getMatchingAnswer(),questionsMatch); //might need to pass in what each question is worth
+                possibleConsistencyScore += eachQuestionIsWorth;
+                System.out.println("Current Consistency Score is: " + consistencyScore + " out of " + possibleConsistencyScore);
 
 
             }
 
         }
-
-//            Map<Test,Integer> finalPersonalityScore = new HashMap<>();
-//            Map<Test,Integer> finalConsitencyScore = new HashMap<>();
 
             currentTest.setPossibleConsistencyScore(possibleConsistencyScore);
             currentTest.setPossiblePersonalityScore(possiblePersonalityScore);
@@ -478,13 +376,6 @@ public class TestController {
 
 
             currentUser.setScores(scores);
-
-//
-//            finalPersonalityScore.put(currentTest,personalityScore);
-//            finalConsitencyScore.put(currentTest,consistencyScore);
-
-//            currentUser.setPersonalityScores(finalPersonalityScore);
-//            currentUser.setConsistencyScores(finalConsitencyScore);
 
             scoreDao.save(finalScore);
             userDao.save(currentUser);
@@ -543,40 +434,6 @@ public class TestController {
             }
 
 
-
-//            List<Integer> consitencyScoreInts = new ArrayList<>();
-//            List<Integer> personalityScoreInts = new ArrayList<>();
-
-//            for (User user : testTakers){
-//                for(Integer score : user.getConsistencyScores().values()){
-//
-//                    consitencyScoreInts.add(score);
-//                }
-//                for(Integer score : user.getPersonalityScores().values()){
-//
-//                    personalityScoreInts.add(score);
-//
-//                }
-//
-//
-//            }
-
-            //Might need to Create Score Object and Creat a Map<Test, Score> in User class.
-
-//            List<Integer> scoresInts = new ArrayList<>();
-//
-//
-//
-//            Map<User, Integer> scores = new HashMap<>();
-
-          //  for(Integer val : )
-
-//            for (User user : testTakers){
-//                for(Integer val : user.getConsistencyScores().values()){
-//                System.out.println("User: "+ user + " Consistency Score: " + val);
-//                }
-//            }
-
             model.addAttribute("title","Manage Test Takers!");
             model.addAttribute("testTakers",testTakers);
             model.addAttribute("scores",userScores);
@@ -621,11 +478,98 @@ public class TestController {
                 }
             }
             return list;
-    }
+
+        }
+
+        public int createMatchingAnswer(int answer, Boolean doesMatch){
+
+            int answer2;
+
+            if (doesMatch){
+                answer2 = answer;
+                return answer2;
+            }
+
+            Map<Integer,Integer> scores = new HashMap<>();
+
+            scores.put(1,5);
+            scores.put(2,4);
+            scores.put(3,3);
+
+            for (Map.Entry<Integer,Integer> set : scores.entrySet()){
+                if (answer == set.getKey()){
+                    answer2 = set.getValue();
+                    return answer2;
+                }
+
+                if (answer == set.getValue()) {
+
+                    answer2 = set.getKey();
+                    return answer2;
+                }
+
+            }
+
+                return 0;
+        }
+
+        public int checkConsistency(int answer1, int matchingAnswer, Boolean doesMatch){
 
 
 
 
+            int consistencyScore = 0;
 
+            Map<Integer,Integer> consistency = new HashMap<>();
+
+            consistency.put(1,5);
+            consistency.put(2,4);
+            consistency.put(3,3); // this map is being created twice. Should refactor map into separate function to be only used once?
+
+            if (doesMatch){
+                if (Math.abs(answer1-matchingAnswer) == 0){
+                    consistencyScore+=5;
+                    return consistencyScore;
+                }
+                else if (Math.abs(answer1-matchingAnswer) == 1){
+                    consistencyScore+=3;
+                    return consistencyScore;
+                }
+                else if (Math.abs(answer1-matchingAnswer) == 2){
+                    consistencyScore+=1;
+                    return consistencyScore;
+
+                }
+                else {return consistencyScore;}
+            }
+
+            else{
+
+                for (Map.Entry<Integer,Integer> pair : consistency.entrySet()){
+                    Integer key = pair.getKey();
+                    Integer val = pair.getValue();
+
+                    int maxDifference = Math.abs(key - val);
+
+                    if (Math.abs( answer1 - matchingAnswer) == maxDifference){
+                        consistencyScore+=5;
+                        return consistencyScore;
+                    }
+                    else if(Math.abs( Math.abs( answer1 - matchingAnswer) - maxDifference) == 1 ){
+                        consistencyScore+=3;
+                        return consistencyScore;
+                    }
+                    else if(Math.abs( Math.abs( answer1 - matchingAnswer) - maxDifference) == 2){
+                        consistencyScore+=1;
+                        return consistencyScore;
+                    }
+
+
+
+                }
+
+            }
+            return consistencyScore;
+        }
 
 }

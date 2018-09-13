@@ -47,15 +47,19 @@
                     <li class="nav-item">
                     <li th:unless="${session.loggedInUser}"><a class="nav-link" href="/signup">Sign Up</a></li>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/test/newtest">Create Test</a>
-                    </li>
                     <li th:if="${session.loggedInUser}" class="nav-item">
+                        <li th:if="${session.loggedInUser.getIsEmployer() == true}" class="nav-item">
+                            <a class="nav-link" href="/test/newtest">Create Test</a>
+                        </li>
                         <!--<div th:unless="${session.loggedInUser}">-->
-                    <li th:if="${session.loggedInUser.getIsEmployer() == false}"><a class="nav-link" href="/test"> All Tests</a></li>
+                        <li th:if="${session.loggedInUser.getIsEmployer() == false}">
+                            <a class="nav-link" href="/test"> All Tests</a>
+                        </li>
                     </li>
                     <li th:if="${session.loggedInUser}" class="nav-item">
-                    <li th:if="${session.loggedInUser.getIsEmployer() == true}"><a class="nav-link" href="/test/manage"> My Tests</a></li>
+                        <li th:if="${session.loggedInUser.getIsEmployer() == true}">
+                             <a class="nav-link" href="/test/manage"> My Tests</a>
+                        </li>
                     </li>
                         <!--</div>-->
 
