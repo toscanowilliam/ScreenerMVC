@@ -8,6 +8,9 @@ import javax.persistence.*;
 public class Answer {
 
 
+    //Thinking about removing the Answer Object all together. It's not efficient assuming 5000 users would use it.
+
+
     @Id
     @GeneratedValue
     private int id;

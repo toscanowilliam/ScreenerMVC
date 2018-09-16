@@ -36,10 +36,21 @@ public class TestController {
     ScoreDao scoreDao;
 
     @RequestMapping(value="", method = RequestMethod.GET)
-    public String displayTests(Model model){
+    public String displayTests(Model model, HttpSession session){
+
+        User currentUser = (User) session.getAttribute("loggedInUser");
+
+        List<Test> tests = new ArrayList<>();
+
+        for (Test test : testDao.findAll()){
+            if  (!test.getTestTakers().contains(userDao.findOne(currentUser.getId()))){
+                tests.add(test);
+            }
+        }
+
 
         model.addAttribute("title", "Available Tests!");
-        model.addAttribute("tests",testDao.findAll());
+        model.addAttribute("tests",tests);
         return "test/allTests";
 
     }
@@ -155,55 +166,28 @@ public class TestController {
     @RequestMapping(value = "taketest/{testId}", method = RequestMethod.GET)
     public String displayTakeTest(Model model, @PathVariable int testId, HttpSession session) {
 
-
-        User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
 
         List<Question> questions = currentTest.getQuestions();
 
-//        List<String> questionInts = new ArrayList<>();
-//
-//        Map<String,Integer> questionMap = new HashMap<>(); //If I use a Question String, then the user cannot have duplicate questions.
-//                                                            // Well I could, I'd just have to make it so it adds an extra space at the end of the user String.
-//
-//
-//        for(Question question : questions){
-//            questionMap.put(question.getQuestion1(),question.getId());
-//            questionMap.put(question.getQuestion2(), question.getId());
-//        }
-//
-//        List keys = new ArrayList(questionMap.keySet());
-//        Collections.shuffle(keys);
-//        for (Object o : keys) {
-//            // Access keys/values in a random order
-//            questionMap.get(o);
-//        }
+        Map<String,Integer> questionMap = new HashMap<>(); //If I use a Question String, then the user cannot have duplicate questions.
+                                                            // Well I could, I'd just have to make it so it adds an extra space at the end of the user String.
 
-        int totalElements = questions.size();
-        // initialize random number generator
-        Random random = new Random();
-        for (int loopCounter = 0; loopCounter < totalElements; loopCounter++) {
-            // get the list element at current index
-            Question currentElement = questions.get(loopCounter);
-            // generate a random index within the range of list size
-            int randomIndex = loopCounter + random.nextInt(totalElements - loopCounter);
-            // set the element at current index with the element at random
-            // generated index
-            questions.set(loopCounter, questions.get(randomIndex));
-            // set the element at random index with the element at current loop
-            // index
-            questions.set(randomIndex, currentElement);
+        for(Question question : questions){
+            questionMap.put(question.getQuestion1(),question.getId());
+            if (question.getQuestion2() != null){ questionMap.put(question.getQuestion2(), question.getId());}
         }
 
-        List<Question> newList = new ArrayList<>(questions);
+        List<String> list = new ArrayList<>(questionMap.keySet());
+        Collections.shuffle(list);
 
-        Collections.shuffle(newList);
-
+        Map<String, Integer> shuffleMap = new LinkedHashMap<>();
+        list.forEach(k->shuffleMap.put(k, questionMap.get(k)));
 
 
         model.addAttribute("title", "Take The Test!");
-        model.addAttribute("currentMatchingTestQuestions", questions);
-        model.addAttribute("newList", newList);
+//        model.addAttribute("currentMatchingTestQuestions", questions);
+        model.addAttribute("newList", shuffleMap);
 
         model.addAttribute("test",currentTest);
 
@@ -429,6 +413,10 @@ public class TestController {
             Map<User, Score> userScores = new HashMap<>();
 
 
+            //TODO: Fix issue where it shuffles previous scores instead of simply displaying the most recent score by user.
+            // Since it's a HASHMAP, shouldn't there not be duplicate keys?
+
+
             for (User testTaker : testTakers){
                 for(Score score : testTaker.getScores().values()){
                     userScores.put(testTaker,score);
@@ -522,7 +510,7 @@ public class TestController {
 
             int score = 0;
 
-            if (doesMatch){
+            if (doesMatch){ //This checks for consistency when doesMatch, also checks for personality score as the process follows the same logic.
                 if (Math.abs(answer1-answer2) == 0){
                     score+=5;
                     return score;
@@ -572,17 +560,6 @@ public class TestController {
                             return score;
                         }
 
-
-//                        if (Math.abs(answer1 - answer2) == maxDifference) {
-//                            score += 5;
-//                            return score;
-//                        } else if (Math.abs(Math.abs(answer1 - answer2) - maxDifference) == 1) {
-//                            score += 3;
-//                            return score;
-//                        } else if (Math.abs(Math.abs(answer1 - answer2) - maxDifference) == 2) {
-//                            score += 1;
-//                            return score;
-//                        }
                     }
 
 
