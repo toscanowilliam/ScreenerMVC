@@ -14,7 +14,7 @@ public class User {
 
     @Id
     @GeneratedValue
-    int id;
+    private int id;
 
     @NotNull
     @Size(min=5, max=30)
@@ -24,20 +24,28 @@ public class User {
     @Transient
     private String password;
 
+    private Boolean isEmployer;
+
     @NotNull
     private String pwHash;
 
     @OneToMany(mappedBy = "user")
     @MapKeyJoinColumn(name="QUESTION_ID")
-    Map<Question,Answer> answers = new HashMap<>(); //One User to many answers of questions
+    private Map<Question,Answer> answers = new HashMap<>(); //One User to many answers of questions
+
+    @OneToMany(mappedBy = "user")
+    @MapKeyJoinColumn(name="TEST_ID")
+    private Map<Test,Score> scores = new HashMap<>(); //One User to many scores of tests
+
+//    @ElementCollection
+//    private Map<Test,Integer> personalityScores = new HashMap<>();
+//
+//    @ElementCollection
+//    private Map<Test,Integer> consistencyScores = new HashMap<>();
 
     @OneToMany
     @JoinColumn(name="test_creator_id")
     private List<Test> createdTests = new ArrayList<>();
-
-
-
-
 
 
     public int getId() {
@@ -88,7 +96,25 @@ public class User {
         this.createdTests = test;
     }
 
+//    public Map<Test, Integer> getPersonalityScores() { return personalityScores; }
+//
+//    public void setPersonalityScores(Map<Test, Integer> personalityScores) { this.personalityScores = personalityScores; }
+//
+//    public Map<Test, Integer> getConsistencyScores() { return consistencyScores; }
+//
+//    public void setConsistencyScores(Map<Test, Integer> consistencyScores) { this.consistencyScores = consistencyScores; }
 
+    public List<Test> getCreatedTests() { return createdTests; }
+
+    public void setCreatedTests(List<Test> createdTests) { this.createdTests = createdTests; }
+
+    public Boolean getIsEmployer() { return isEmployer; }
+
+    public void setIsEmployer(Boolean isEmployer) { this.isEmployer = isEmployer; }
+
+    public Map<Test, Score> getScores() { return scores; }
+
+    public void setScores(Map<Test, Score> scores) { this.scores = scores; }
 
 
 

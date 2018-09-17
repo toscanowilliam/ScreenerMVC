@@ -12,7 +12,7 @@
     <form method="post" style="max-width:600px;" th:object="${user}" id="signupForm">
 
         <div class="form-group" id="usernameGroup">
-            <label th:for="username">Username</label>
+            <label th:for="username">Username or Company Name</label>
             <input class="form-control" id="usernameField" th:field="*{email}" placeholder="Must be between 5 and 15 characters" />
             <div th:if="${#fields.hasErrors('email')}" class="panel panel-danger" id="errorUsername">
                 <div class="panel-heading">
@@ -30,7 +30,21 @@
                     Error message
                 </div>
             </div>
+
+            <div>
+                <br></br>
+                <label>Are you a job seeker or employer?</label>
+            <select name="isEmployer">
+                <option th:text="Employer"
+                        th:field="*{isEmployer}"
+                        th:value="true">Match</option>
+                <option th:text="JobSeeker"
+                        th:field="*{isEmployer}"
+                        th:value="false">Opposite</option>
+            </select>
+            </div>
         </div>
+
 
         <div class="form-group" id="passwordGroup">
             <label th:for="password">Password</label>
@@ -56,4 +70,6 @@
 </div>
 </body>
 <script type="text/javascript" th:src="@{/JS/signup.js}" />
+
+<footer th:replace="fragments :: footer"></footer>
 </html>

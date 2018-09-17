@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments :: head"></head>
-<body>
+<body style="min-height: 100vh; display: flex; flex-flow: column;
+  justify-content: space-between">
 
 
 <nav th:replace="fragments :: navigation"></nav>
@@ -10,6 +11,7 @@
 
 <div class="container">
     <h1 th:text="${title}">Default Title</h1>
+    <h2 th:text="${isError}">Error</h2>
     <form method="post" style="max-width:600px;" th:object="${question}" id="myForm">
         <div class="form-group">
             <label th:for="question1">Question 1</label>
@@ -17,13 +19,8 @@
             <span th:errors="*{question1}" class="error"></span>
         </div>
         <div class="form-group">
-            <label th:for="question2">Question 2</label>
-            <input class="form-control" th:field="*{question2}" />
-            <span th:errors="*{question2}" class="error"></span>
-        </div>
-        <div class="form-group">
             <br></br>
-            <label th:for="desiredAnswer1">Desired Answer 1</label>
+            <label th:for="desiredAnswer1">Select the First Answer You'd Prefer the Employee to Answer</label>
             <br></br>
             <input type="radio" th:field="*{{desiredAnswer1}}" th:value="1" /> Always True
             <br></br>
@@ -37,40 +34,54 @@
             <br></br>
             <span th:text="${claimedError}" class="error"></span>
         </div>
-        <br></br>
-        <div class="form-group">
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Add a Matching Question?</button>
+        <div class="collapse" id="collapseExample">
+            <div class="form-group">
+                <label th:for="question2">Question 2</label>
+                <input class="form-control" th:field="*{question2}" />
+                <span th:text="${question2Error}" class="error"></span>
+            </div>
             <br></br>
-            <label th:for="desiredAnswer2">Desired Answer 2</label>
-            <br></br>
-            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="1" /> Always True
-            <br></br>
-            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="2" /> Mostly True
-            <br></br>
-            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="3" /> Sometimes True Sometimes False
-            <br></br>
-            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="4" /> Mostly False
-            <br></br>
-            <input type="radio" th:field="*{{desiredAnswer2}}" th:value="5" /> Always False
-            <br></br>
-            <span th:text="${claimedError}" class="error"></span>
+            <!--<div class="form-group">-->
+                <!--<br></br>-->
+                <!--<label th:for="desiredAnswer2">Select the Second Answer You'd Prefer the Employee to Answer</label>-->
+                <!--<br></br>-->
+                <!--<input type="radio" th:field="*{{desiredAnswer2}}" th:value="1" /> Always True-->
+                <!--<br></br>-->
+                <!--<input type="radio" th:field="*{{desiredAnswer2}}" th:value="2" /> Mostly True-->
+                <!--<br></br>-->
+                <!--<input type="radio" th:field="*{{desiredAnswer2}}" th:value="3" /> Sometimes True Sometimes False-->
+                <!--<br></br>-->
+                <!--<input type="radio" th:field="*{{desiredAnswer2}}" th:value="4" /> Mostly False-->
+                <!--<br></br>-->
+                <!--<input type="radio" th:field="*{{desiredAnswer2}}" th:value="5" /> Always False-->
+                <!--<br></br>-->
+                <!--<span th:text="${desiredAnswer2Error}" class="error"></span>-->
+            <!--</div>-->
+            <div>
+                    <label>Do the answers match with both questions or is the question worded in opposite terms?</label>
+                <select name="matchingOpposite">
+                    <option th:text="match"
+                            th:field="*{matchingOpposite}"
+                            th:value="true">Match</option>
+                    <option th:text="opposite"
+                            th:field="*{matchingOpposite}"
+                            th:value="false">Opposite</option>
+                </select>
+            </div>
         </div>
-        <div>
-            <br></br>
-            <label>Do the answers match with both questions or is the question worded in opposite terms?</label>
-        <select name="matchingOpposite">
-            <option th:text="match"
-                    th:field="*{matchingOpposite}"
-                    th:value="true">Match</option>
-            <option th:text="opposite"
-                    th:field="*{matchingOpposite}"
-                    th:value="false">Opposite</option>
-        </select>
-        </div>
+
+
         <br></br>
         <input type="submit" value="Add Question to Test" />
         <input type="hidden" name="someName" value="helloworld" />
         <a href="/test/newtest" onclick="document.getElementById('myForm').submit();">Finish Test? (Finish Current Question And Submit Or Just Submit If You'd Like to Finish</a>
+
     </form>
 </div>
+<div th:replace="fragments :: javascript"></div>
+<footer th:replace="fragments :: footer"></footer>
+
 </body>
+
 </html>

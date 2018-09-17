@@ -19,8 +19,6 @@ public class Question {
     @Size(min = 3, message = "Please add a question")
     private String question1;
 
-    @NotNull
-    @Size(min=3, message = "Please add a question")
     private String question2;
 
     private Integer desiredAnswer1;
@@ -29,30 +27,10 @@ public class Question {
 
     private Boolean matchingOpposite;
 
+//    private Boolean hasMatch;
+
     @ManyToOne
     private Test test;
-
-//    @OneToOne
-//    QuestionMatch matchingQuestion;
-
-
-    //Map<Question, QuestionMatch> questions = new HashMap<>();
-
-//
-//    @OneToMany(mappedBy = "question")
-//    @MapKeyJoinColumn(name="TEST_ID")
-//    Map<Test,Answer> answers = new HashMap<>(); //One User to many answers of questions
-
-
-
-
-    public Test getTest() {
-        return test;
-    }
-
-    public void setTest(Test test) {
-        this.test = test;
-    }
 
     public Question(String question1, String question2) {
         this.question1 = question1;
@@ -61,7 +39,6 @@ public class Question {
 
     public Question() {
     }
-
 
     public int getId() {
         return id;
@@ -87,7 +64,6 @@ public class Question {
         this.question2 = question2;
     }
 
-
     public Integer getDesiredAnswer1() {
         return desiredAnswer1;
     }
@@ -100,8 +76,7 @@ public class Question {
         return desiredAnswer2;
     }
 
-    public void setDesiredAnswer2(Integer desiredAnswer2) {
-        this.desiredAnswer2 = desiredAnswer2; }
+    public void setDesiredAnswer2(Integer desiredAnswer2) { this.desiredAnswer2 = desiredAnswer2; }
 
     public Boolean getMatchingOpposite() {
         return matchingOpposite;
@@ -110,5 +85,18 @@ public class Question {
     public void setMatchingOpposite(Boolean matchingOpposite) {
         this.matchingOpposite = matchingOpposite;
     }
+
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
+    }
+
+//    public Boolean getHasMatch() { return hasMatch; }
+//
+//    public void setHasMatch(Boolean hasMatch) { this.hasMatch = hasMatch; }
+
 
 }

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments :: head"></head>
-<body>
+<body style="min-height: 100vh; display: flex; flex-flow: column;
+  justify-content: space-between">
 
 
 <nav th:replace="fragments :: navigation"></nav>
@@ -12,10 +13,10 @@
     <h1 th:text="${title}">Default Title</h1>
     <form method="post" style="max-width:600px;" th:object="${test}" id="myForm">
         <div th:each="question, iter : ${newList}" name="questions" class="list-group">
-                <h2 th:text="${question.question1}" class="list-group-item-heading">User Display Name</h2>
+                <h2 th:text="${question.key}" class="list-group-item-heading">User Display Name</h2>
                 <div class="form-group">
                     <br></br>
-                    <label th:for="desiredAnswer1">Desired Answer 1</label>
+                    <label th:for="desiredAnswer1">Desired Answer</label>
                     <br></br>
                     <!--maybe put div for each hidden input?-->
                     <!--iter. index is so that each name is different, so we can click one button per question.-->
@@ -23,7 +24,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="1"
-                            th:attr = "data-question-id=${question.id}"
+                            th:attr = "data-question-id=${question.value}"
 
                             /> Always True
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
@@ -33,7 +34,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="2"
-                            th:attr = "data-question-id=${question.id}"
+                            th:attr = "data-question-id=${question.value}"
                     />  Mostly True
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
                     <input type="hidden" th:name="userAnswer" th:value="2" class="userAnswers" />
@@ -42,7 +43,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="3"
-                            th:attr = "data-question-id=${question.id}"
+                            th:attr = "data-question-id=${question.value}"
                     />  Sometimes True Sometimes False
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
                     <input type="hidden" th:name="userAnswer" th:value="3" class="userAnswers"/>
@@ -51,7 +52,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="4"
-                            th:attr = "data-question-id=${question.id}"
+                            th:attr = "data-question-id=${question.value}"
                     /> Mostly False
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
                     <input type="hidden" th:name="userAnswer" th:value="4" class="userAnswers"/>
@@ -60,7 +61,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="5"
-                            th:attr = "data-question-id=${question.id}"
+                            th:attr = "data-question-id=${question.value}"
                     />  Always False
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
                     <input type="hidden" th:name="userAnswer" th:value="5" class="userAnswers"/>
@@ -69,80 +70,79 @@
         </div>
 
 
-        <div th:each="question2, iter : ${currentMatchingTestQuestions}" name="questions" class="list-group">
-            <h2 th:text="${question2.question2}" class="list-group-item-heading">User Display Name</h2>
-            <div class="form-group">
-                <br></br>
-                <label th:for="desiredAnswer1">Desired Answer 1</label>
-                <br></br>
-                <!--maybe put div for each hidden input?-->
-                <!--iter. index is so that each name is different, so we can click one button per question.-->
-                <input
-                        type="radio"
-                        th:name="'userAnswerr' + ${iter.index}"
-                        th:value="1"
-                        th:attr = "data-question-id=${question2.id}"
+        <!--<div th:each="question2, iter : ${currentMatchingTestQuestions}" name="questions" class="list-group">-->
+            <!--<h2 th:text="${question2.question2}" class="list-group-item-heading">User Display Name</h2>-->
+            <!--<div th:if="${question2.question2 != NULL}" class="form-group">-->
+                <!--<br></br>-->
+                <!--<label th:for="desiredAnswer1">Desired Answersss</label>-->
+                <!--<br></br>-->
+                <!--&lt;!&ndash;maybe put div for each hidden input?&ndash;&gt;-->
+                <!--&lt;!&ndash;iter. index is so that each name is different, so we can click one button per question.&ndash;&gt;-->
+                <!--<input-->
+                        <!--type="radio"-->
+                        <!--th:name="'userAnswerr' + ${iter.index}"-->
+                        <!--th:value="1"-->
+                        <!--th:attr = "data-question-id=${question2.id}"-->
 
-                /> Always True
-                <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
-                <input type="hidden" th:name="userAnswer" th:value="1" class="userAnswers"/>
-                <br></br>
-                <input
-                        type="radio"
-                        th:name="'userAnswerr' + ${iter.index}"
-                        th:value="2"
-                        th:attr = "data-question-id=${question2.id}"
-                />  Mostly True
-                <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
-                <input type="hidden" th:name="userAnswer" th:value="2" class="userAnswers" />
-                <br></br>
-                <input
-                        type="radio"
-                        th:name="'userAnswerr' + ${iter.index}"
-                        th:value="3"
-                        th:attr = "data-question-id=${question2.id}"
-                />  Sometimes True Sometimes False
-                <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
-                <input type="hidden" th:name="userAnswer" th:value="3" class="userAnswers"/>
-                <br></br>
-                <input
-                        type="radio"
-                        th:name="'userAnswerr' + ${iter.index}"
-                        th:value="4"
-                        th:attr = "data-question-id=${question2.id}"
-                /> Mostly False
-                <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
-                <input type="hidden" th:name="userAnswer" th:value="4" class="userAnswers"/>
-                <br></br>
-                <input
-                        type="radio"
-                        th:name="'userAnswerr' + ${iter.index}"
-                        th:value="5"
-                        th:attr = "data-question-id=${question2.id}"
-                />  Always False
-                <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
-                <input type="hidden" th:name="userAnswer" th:value="5" class="userAnswers"/>
+                <!--/> Always True-->
+                <!--&lt;!&ndash;<input type="hidden" th:value="${question.id}" name="questionId" />&ndash;&gt;-->
+                <!--<input type="hidden" th:name="userAnswer" th:value="1" class="userAnswers"/>-->
+                <!--<br></br>-->
+                <!--<input-->
+                        <!--type="radio"-->
+                        <!--th:name="'userAnswerr' + ${iter.index}"-->
+                        <!--th:value="2"-->
+                        <!--th:attr = "data-question-id=${question2.id}"-->
+                <!--/>  Mostly True-->
+                <!--&lt;!&ndash;<input type="hidden" th:value="${question.id}" name="questionId" />&ndash;&gt;-->
+                <!--<input type="hidden" th:name="userAnswer" th:value="2" class="userAnswers" />-->
+                <!--<br></br>-->
+                <!--<input-->
+                        <!--type="radio"-->
+                        <!--th:name="'userAnswerr' + ${iter.index}"-->
+                        <!--th:value="3"-->
+                        <!--th:attr = "data-question-id=${question2.id}"-->
+                <!--/>  Sometimes True Sometimes False-->
+                <!--&lt;!&ndash;<input type="hidden" th:value="${question.id}" name="questionId" />&ndash;&gt;-->
+                <!--<input type="hidden" th:name="userAnswer" th:value="3" class="userAnswers"/>-->
+                <!--<br></br>-->
+                <!--<input-->
+                        <!--type="radio"-->
+                        <!--th:name="'userAnswerr' + ${iter.index}"-->
+                        <!--th:value="4"-->
+                        <!--th:attr = "data-question-id=${question2.id}"-->
+                <!--/> Mostly False-->
+                <!--&lt;!&ndash;<input type="hidden" th:value="${question.id}" name="questionId" />&ndash;&gt;-->
+                <!--<input type="hidden" th:name="userAnswer" th:value="4" class="userAnswers"/>-->
+                <!--<br></br>-->
+                <!--<input-->
+                        <!--type="radio"-->
+                        <!--th:name="'userAnswerr' + ${iter.index}"-->
+                        <!--th:value="5"-->
+                        <!--th:attr = "data-question-id=${question2.id}"-->
+                <!--/>  Always False-->
+                <!--&lt;!&ndash;<input type="hidden" th:value="${question.id}" name="questionId" />&ndash;&gt;-->
+                <!--<input type="hidden" th:name="userAnswer" th:value="5" class="userAnswers"/>-->
 
-            </div>
-
-
-        </div>    <br></br>
+            <!--</div>-->
 
 
 
-
-
-
-
+        <!--</div>    <br></br>-->
 
         <br></br>
         <input type="submit" value="Finish Test" id="button"/>
         <input type="hidden" th:name="allAnswers" id="allAnswers"/>
+        <input type="hidden" th:name="allMatchingAnswers" id="allMatchingAnswers"/>
+
         <input type="hidden" th:name="questionIds" id="questionIds"/>
+        <input type="hidden" th:name="questionIds2" id="questionIds2"/>
+
     </form>
 </div>
 </body>
 <script type="text/javascript" th:src="@{/JS/form.js}" />
+<footer th:replace="fragments :: footer"></footer>
 <!--<script type="text/javascript" th:inline="javascript">-->
 
     <!--const selectedAnswers = []-->

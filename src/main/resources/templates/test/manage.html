@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<nav th:replace="fragments :: navigation"></nav>
+
+
+<body style="min-height: 100vh; display: flex; flex-flow: column;
+  justify-content: space-between">
+<div class="container" th:object="${scores}" >
+    <p th:unless="${testTakers} and ${testTakers.size()}">no job seekers took this test! :(</p>
+    <p>To create a test, click <a href="/test/newtest"> here</a></p>
+    <h1 th:text="${title}">Default Title</h1>
+    <table border="1" class="table">
+        <tr>
+            <th>Test Name</th>
+            <th >Possible Personality Scores</th>
+            <th >Possible Consistency Scores</th>
+            <th >View Test</th>
+
+
+        </tr>
+        <tr>
+            <td th:text="${test.testName}">Test Name</td>
+            <td th:text="${test.possiblePersonalityScore}"></td>
+            <td th:text="${test.possibleConsistencyScore}"></td>
+        </tr>
+        <tr>
+            <th>User</th>
+            <th colspan="2">Score</th>
+        </tr>
+        <tr th:each="score : ${scores}">
+                <td th:text="${score.key.getEmail()}">A Smoke Test'</td>
+                <td th:text="${score.value.getPersonalityScore()}"></td>
+                <td th:text="${score.value.getConsistencyScore()}"></td>
+                <td> <a th:href="@{'/test/manage/' + ${test.id} + '/' + ${score.key.getId()}}">View Questions And Answers</a></td>
+        </tr>
+    </table>
+</div>
+<footer th:replace="fragments :: footer"></footer>
+</body>
+</html>

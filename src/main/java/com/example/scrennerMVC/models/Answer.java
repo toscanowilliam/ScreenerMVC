@@ -1,8 +1,6 @@
 package com.example.scrennerMVC.models;
 
 
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
 
 
@@ -10,13 +8,16 @@ import javax.persistence.*;
 public class Answer {
 
 
+    //Thinking about removing the Answer Object all together. It's not efficient assuming 5000 users would use it.
+
+
     @Id
     @GeneratedValue
-    private long id;
+    private int id;
 
-    private int answer;
+    private Integer answer;
 
-    private int matchingAnswer;
+    private Integer matchingAnswer;
 
     @ManyToOne
     private User user; //user who answers questions
@@ -24,15 +25,6 @@ public class Answer {
     @ManyToOne
     @JoinColumn(name="QUESTION_ID")
     private Question question; //question of the current answer
-
-//    @ManyToOne
-//    @JoinColumn(name="TEST_ID")
-//    private Test test;
-
-//    @ManyToOne
-//    @JoinColumn(name="QUESTION_MATCH_ID")
-//    QuestionMatch questionMatch;
-
 
 
     @ManyToOne
@@ -43,19 +35,21 @@ public class Answer {
 
 
 
-    public long getId() {
+
+
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public int getAnswer() {
+    public Integer getAnswer() {
         return answer;
     }
 
-    public void setAnswer(int answer) {
+    public void setAnswer(Integer answer) {
         this.answer = answer;
     }
 
@@ -75,11 +69,11 @@ public class Answer {
         this.question = question;
     }
 
-    public int getMatchingAnswer() {
+    public Integer getMatchingAnswer() {
         return matchingAnswer;
     }
 
-    public void setMatchingAnswer(int matchingAnswer) {
+    public void setMatchingAnswer(Integer matchingAnswer) {
         this.matchingAnswer = matchingAnswer;
     }
 

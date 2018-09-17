@@ -243,6 +243,7 @@ body {
 /*-------------- foooter ---------------*/
 
 #footer {
+
     margin-top: 50rem;
     }
 
@@ -333,3 +334,25 @@ body {
     width: 100%;
     top: 5px;
     }
+
+
+
+/*!
+ * Start Bootstrap - Small Business (https://startbootstrap.com/template-overviews/small-business)
+ * Copyright 2013-2017 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-small-business/blob/master/LICENSE)
+ */
+
+body {
+  padding-top: 54px;
+  min-height: 100vh;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+@media (min-width: 992px) {
+  body {
+    padding-top: 56px;
+  }
+}

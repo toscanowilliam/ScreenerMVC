@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<nav th:replace="fragments :: navigation"></nav>
+
+<body style="min-height: 100vh; display: flex; flex-flow: column;
+  justify-content: space-between">
+<div class="container">
+    <p th:unless="${tests} and ${tests.size()}">no tests! :(</p>
+    <p>To create a test, click <a href="/test/newtest"> here</a></p>
+    <h1 th:text="${title}">Default Title</h1>
+    <div th:each="test : ${tests}" class="list-group">
+        <!--<div th:if="${test.getTestCreator() == user}">-->
+        <a th:href="@{'/test/manage/' + ${test.id}}" class="list-group-item">
+            <h2 th:text="${test.testName}" class="list-group-item-heading">User Display Name</h2>
+            <p th:text="${test.description}" class="list-group-item-text"></p>
+            <p>Created by: <span th:text="${test.getTestCreator() == null ? '' : test.getTestCreator().email}"></span></p>
+        </a>
+        <!--</div>-->
+    </div>
+</div>
+<footer th:replace="fragments :: footer"></footer>
+</body>
+</html>

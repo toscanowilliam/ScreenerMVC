@@ -22,6 +22,9 @@ function findChecked() {
 
 
 
+
+
+
 //Are these globals?
 const submitButton = document.querySelector('#button'); //sets variable for button with ID of "buttton"
     submitButton.addEventListener('click', (event) => { //Adds the even for when button is clicked
