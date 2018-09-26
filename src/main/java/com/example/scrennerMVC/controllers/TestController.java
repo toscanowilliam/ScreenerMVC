@@ -303,7 +303,7 @@ public class TestController {
                 }
             }
         }
-
+        //
         currentUser.setAnswers(answerMap);
         userDao.save(currentUser);
         testDao.save(currentTest);
