@@ -24,7 +24,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="1"
-                            th:attr = "data-question-id=${question.value}"
+                            th:attr = "data-question-id=${question.value}, data-question-key=${question.key}"
 
                             /> Always True
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
@@ -34,7 +34,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="2"
-                            th:attr = "data-question-id=${question.value}"
+                            th:attr = "data-question-id=${question.value}, data-question-key=${question.key}"
                     />  Mostly True
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
                     <input type="hidden" th:name="userAnswer" th:value="2" class="userAnswers" />
@@ -43,7 +43,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="3"
-                            th:attr = "data-question-id=${question.value}"
+                            th:attr = "data-question-id=${question.value}, data-question-key=${question.key}"
                     />  Sometimes True Sometimes False
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
                     <input type="hidden" th:name="userAnswer" th:value="3" class="userAnswers"/>
@@ -52,7 +52,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="4"
-                            th:attr = "data-question-id=${question.value}"
+                            th:attr = "data-question-id=${question.value}, data-question-key=${question.key}"
                     /> Mostly False
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
                     <input type="hidden" th:name="userAnswer" th:value="4" class="userAnswers"/>
@@ -61,7 +61,7 @@
                             type="radio"
                             th:name="'userAnswer' + ${iter.index}"
                             th:value="5"
-                            th:attr = "data-question-id=${question.value}"
+                            th:attr = "data-question-id=${question.value}, data-question-key=${question.key}"
                     />  Always False
                     <!--<input type="hidden" th:value="${question.id}" name="questionId" />-->
                     <input type="hidden" th:name="userAnswer" th:value="5" class="userAnswers"/>
@@ -132,11 +132,21 @@
 
         <br></br>
         <input type="submit" value="Finish Test" id="button"/>
-        <input type="hidden" th:name="allAnswers" id="allAnswers"/>
-        <input type="hidden" th:name="allMatchingAnswers" id="allMatchingAnswers"/>
 
+        <!--<div th:each="question1 : ${question1s}" >-->
+            <!--<input type="hidden" th:name="question1s" th:value="${question1}"/>-->
+        <!--</div>-->
+        <!--<div th:each="question2 : ${question2s}" >-->
+            <!--<input type="hidden" th:name="question2s" th:value="${question2}"/>-->
+        <!--</div>-->
+        <!--<input type="hidden" th:name="question1s" th:value="${question1s}"/>-->
+        <!--<input type="hidden" th:name="question2s" th:value="${question2s}"/>-->
+
+
+        <input type="hidden" th:name="allAnswers" id="allAnswers"/>
         <input type="hidden" th:name="questionIds" id="questionIds"/>
-        <input type="hidden" th:name="questionIds2" id="questionIds2"/>
+        <input type="hidden" th:name="questionKeys" id="questionKeys"/>
+
 
     </form>
 </div>

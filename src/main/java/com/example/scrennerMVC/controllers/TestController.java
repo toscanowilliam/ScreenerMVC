@@ -10,9 +10,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.MapKeyColumn;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Table;
+import com.google.common.collect.HashBasedTable;
 
 
 @Controller
@@ -171,11 +176,45 @@ public class TestController {
         List<Question> questions = currentTest.getQuestions();
 
         Map<String,Integer> questionMap = new HashMap<>(); //If I use a Question String, then the user cannot have duplicate questions.
-                                                            // Well I could, I'd just have to make it so it adds an extra space at the end of the user String.
 
-        for(Question question : questions){
+
+//        String[] question1s = new String[questions.size()];
+//        String[] question2s = new String[questions.size()];
+
+//        List<String> question1s = new ArrayList<>();
+//
+//        List<String> question2s = new ArrayList<>();
+
+
+
+        // Well I could, I'd just have to make it so it adds an extra space at the end of the user String.
+
+
+
+//        for(int i =0; i < questions.size(); i++){
+//
+//            question1s[i] = questions.get(i).getQuestion1();
+//
+//            questionMap.put(questions.get(i).getQuestion1(),questions.get(i).getId());
+//            if (questions.get(i).getQuestion2() != null) {
+//                questionMap.put(questions.get(i).getQuestion2(),questions.get(i).getId());
+//                question2s[i] = questions.get(i).getQuestion2();
+//
+//            }
+//            else{question2s[i] = null;}
+//
+//        }
+
+        for (Question question : questions){
             questionMap.put(question.getQuestion1(),question.getId());
-            if (question.getQuestion2() != null){ questionMap.put(question.getQuestion2(), question.getId());}
+//            question1s.add(question.getQuestion1());
+            if (question.getQuestion2() != null){
+                questionMap.put(question.getQuestion2(), question.getId());
+//                question2s.add(question.getQuestion2());
+            }
+//            else{
+//                question2s.add(null);
+//            }
         }
 
         List<String> list = new ArrayList<>(questionMap.keySet());
@@ -191,83 +230,87 @@ public class TestController {
 
         model.addAttribute("test",currentTest);
 
+//        model.addAttribute("question1s",question1s);
+//        model.addAttribute("question2s",question2s);
+
+
         return "test/takeTest";
 
     }
 
 
     @RequestMapping(value="taketest/{testId}", method=RequestMethod.POST)
-    public String processTakeTest(Model model, @PathVariable int testId, HttpSession session, @RequestParam(name="allAnswers") String allAnswers[], @RequestParam(name="questionIds") String questionIds[]){
+    public String processTakeTest(Model model, @PathVariable int testId, HttpSession session, @RequestParam(name="allAnswers") String allAnswers[],
+                                  @RequestParam(name="questionIds") String questionIds[], @RequestParam(name="questionKeys") String questionKeys[]){
+
+
 
         User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
+        List<User> testTakers = currentTest.getTestTakers();
+        testTakers.add(currentUser);
 
-        int aPosition = 0;
+        List<Integer> answerIntList = Arrays.stream(allAnswers).map(Integer::valueOf).collect(Collectors.toList());
 
-        //This whole damn function could use some refactoring.
-            eachAnswer:
-            for (String answer : allAnswers) {
+        List<Integer> questionIdList  = Arrays.stream(questionIds).map(Integer::valueOf).collect(Collectors.toList());
 
-                Answer currentAnswer = new Answer();
-                int currentAnswerInt = Integer.parseInt(answer); //answer is a string of a number and here it converts to int
+        Map<Question,Answer> answerMap = new HashMap<>();
 
-                String currentQuestionId = questionIds[aPosition]; //finds the first questionId by the current position
-                int currentQuestionIdInt = Integer.parseInt(currentQuestionId); //converts the questionId to an int
 
-                Question currentQuestion = questionDao.findOne(currentQuestionIdInt); //assign "currentQuestion" by the currentQuestionId in the list
+        for (int i = 0; i < answerIntList.size(); i++){
 
-                currentAnswer.setUser(currentUser);
-                currentAnswer.setQuestion(currentQuestion);
-                currentAnswer.setCurrentTest(currentTest);
-                currentAnswer.setAnswer(currentAnswerInt); //sets currentAnswer with all CURRENTLY KNOWN attributes
-                currentAnswer.setMatchingAnswer(null);
+            int currentQuestionId = questionIdList.get(i);
+            Question currentQuestion = questionDao.findOne(currentQuestionId);
 
-                Map<Integer, Integer> positionOfMatchingQuestionIds = new HashMap<Integer, Integer>();
+            if (!answerMap.containsKey(currentQuestion)){
 
-                mapper:
-                for (int i = 0; i < questionIds.length; i++){
-                    if (questionDao.findOne(Integer.parseInt(questionIds[i])).getMatchingOpposite() == null){
-                      //  numberOfNonMatchingQuestions +=1;
-                        continue mapper;
-                    }
-                    positionOfMatchingQuestionIds.put(Integer.parseInt(questionIds[i]), i);
+                String question1 = currentQuestion.getQuestion1();
+                String question2 = "";
+                String questionKey = questionKeys[i];
+                int currentAnswerInt = answerIntList.get(i);
+                int positionOfDuplicateQuestionId = -1;
+                Boolean hasMatch = false;
+
+                if(currentQuestion.getQuestion2() != null) {
+                    question2 = currentQuestion.getQuestion2();
+                    hasMatch = true;
+                    positionOfDuplicateQuestionId = questionIdList.lastIndexOf(currentQuestionId);
                 }
 
-                label:
-                for (Map.Entry<Integer,Integer> entry : positionOfMatchingQuestionIds.entrySet()){
-                    Integer matchingQuestionId = entry.getKey();
-                    Integer value = entry.getValue(); //position
+                Answer answer = new Answer();
 
-                    if (matchingQuestionId == currentQuestionIdInt){
-                        currentAnswer.setMatchingAnswer(Integer.parseInt(allAnswers[value]));
-                        if ((questionIds.length - (questionIds.length/2) == aPosition)){ //Not sure why but this is the only way I can map answers into the database without duplicating non matching answers.
-                            break eachAnswer;
-                        }
+                answer.setQuestion(currentQuestion);
+                answer.setCurrentTest(currentTest);
+                answer.setUser(currentUser);
 
-                        break label;
-                    }
-                 }
+                if (question1.equals(questionKey)){
+                    answer.setAnswer(currentAnswerInt);
 
-                aPosition += 1;
+                    if (hasMatch){ answer.setMatchingAnswer(answerIntList.get(positionOfDuplicateQuestionId));}
 
-                answerDao.save(currentAnswer);
-                userDao.save(currentUser);
+                    answerMap.put(currentQuestion,answer);
+                    answerDao.save(answer);
+                }
+                else if (question2.equals(questionKey)){
 
+                    answer.setMatchingAnswer(currentAnswerInt);
+
+                    if (hasMatch){ answer.setAnswer(answerIntList.get(positionOfDuplicateQuestionId));}
+
+                    answerMap.put(currentQuestion,answer);
+                    answerDao.save(answer);
+
+                }
             }
+        }
+        //
+        currentUser.setAnswers(answerMap);
+        userDao.save(currentUser);
+        testDao.save(currentTest);
 
-            //Pass in number of Questions as questionsIds.length?
+        processScore(currentUser, currentTest);
 
-            List<User> currentTestTakers = currentTest.getTestTakers();
-            currentTestTakers.add(currentUser);
-
-            currentTest.setTestTakers(currentTestTakers);
-
-            testDao.save(currentTest);
-            userDao.save(currentUser);
-
-            processScore(currentUser, currentTest);
-
-            return "redirect:/home";
+        return "redirect:/home";
     }
 
     public int processScore(User user, Test test) {

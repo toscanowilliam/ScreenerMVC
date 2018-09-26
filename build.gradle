@@ -45,7 +45,7 @@ dependencies {
 	compile('mysql:mysql-connector-java')
 //	compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity4', version: '2.1.2.RELEASE'
 
-
+	compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
 }
 bootRun {
 	addResources = true
