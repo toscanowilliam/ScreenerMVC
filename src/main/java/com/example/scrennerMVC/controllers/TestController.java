@@ -240,8 +240,8 @@ public class TestController {
 
 
     @RequestMapping(value="taketest/{testId}", method=RequestMethod.POST)
-    public String processTakeTest(Model model, @PathVariable int testId, HttpSession session, @RequestParam(name="allAnswers") String allAnswers[],
-                                  @RequestParam(name="questionIds") String questionIds[], @RequestParam(name="questionKeys") String questionKeys[]){
+    public String processTakeTest(Model model, @PathVariable int testId, HttpSession session, @RequestParam(name="allAnswers") int allAnswers[],
+                                  @RequestParam(name="questionIds") int questionIds[], @RequestParam(name="questionKeys") String questionKeys[]){
 
 
 
@@ -250,9 +250,9 @@ public class TestController {
         List<User> testTakers = currentTest.getTestTakers();
         testTakers.add(currentUser);
 
-        List<Integer> answerIntList = Arrays.stream(allAnswers).map(Integer::valueOf).collect(Collectors.toList());
+        List<Integer> answerIntList = Arrays.stream(allAnswers).boxed().collect(Collectors.toList());
 
-        List<Integer> questionIdList  = Arrays.stream(questionIds).map(Integer::valueOf).collect(Collectors.toList());
+        List<Integer> questionIdList  = Arrays.stream(questionIds).boxed().collect(Collectors.toList());
 
         Map<Question,Answer> answerMap = new HashMap<>();
 
