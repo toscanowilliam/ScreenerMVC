@@ -9,8 +9,9 @@ function findChecked() {
     const radios = document.querySelectorAll('input[type=radio]');// sets variable for all radio button values
     radios.forEach(radio =>{ //loops through radio values
     if(radio.checked){ // if the radio button is checked
-        checkedRadios.push(radio.value); //push the value of radio button to checkedRadios array
-        questionIds.push(radio.dataset.questionId);//push question.Id to questionIds array. Notice that dataset interprets...
+        //checkedRadios.push(radio.value); //push the value of radio button to checkedRadios array
+        checkedRadios.push(Number(radio.value))
+        questionIds.push(Number(radio.dataset.questionId));//push question.Id to questionIds array. Notice that dataset interprets...
         questionKeys.push(radio.dataset.questionKey);                                  //...question.id as questionId
 
         }
