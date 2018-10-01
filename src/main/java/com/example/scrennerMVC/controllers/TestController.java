@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.MapKeyColumn;
@@ -169,7 +170,7 @@ public class TestController {
 
 
     @RequestMapping(value = "taketest/{testId}", method = RequestMethod.GET)
-    public String displayTakeTest(Model model, @PathVariable int testId, HttpSession session) {
+    public String displayTakeTest(Model model, @PathVariable int testId, HttpSession session, boolean hasErrors) {
 
         Test currentTest = testDao.findOne(testId);
 
@@ -230,6 +231,10 @@ public class TestController {
 
         model.addAttribute("test",currentTest);
 
+        if (hasErrors == true){
+            model.addAttribute("error", "Please answer every question");
+        }
+
 //        model.addAttribute("question1s",question1s);
 //        model.addAttribute("question2s",question2s);
 
@@ -243,8 +248,16 @@ public class TestController {
     public String processTakeTest(Model model, @PathVariable int testId, HttpSession session, @RequestParam(name="allAnswers") int allAnswers[],
                                   @RequestParam(name="questionIds") int questionIds[], @RequestParam(name="questionKeys") String questionKeys[]){
 
+
+
         User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
+
+        if (allAnswers.length < currentTest.getQuestions().size()){
+
+            return displayTakeTest(model, testId, session, true );
+        }
+
         List<User> testTakers = currentTest.getTestTakers();
         testTakers.add(currentUser);
 
@@ -256,6 +269,14 @@ public class TestController {
         Map<Question,Answer> answerMap = new HashMap<>();
 
         Map<Integer, Integer> questionIdIndex = new HashMap<>(); //questionId, index
+
+        Map<Integer,Integer> consistency = new HashMap<>();
+
+        consistency.put(1,5);
+        consistency.put(2,4);
+        consistency.put(3,3);// this map is being created twice. Should refactor map into separate function to be only used once?
+        consistency.put(4,2);
+        consistency.put(5,1);
 
         int personalityScore = 0;
         int consistencyScore = 0;
@@ -307,7 +328,7 @@ public class TestController {
                     answerDao.save(answer);
                     answerMap.put(currentQuestion,answer);
 
-                    if (!hasMatch){ personalityScore += checkConsisitencyOrPersonality(currentAnswerInt,desiredAnswer1,true); }
+                    if (!hasMatch){ personalityScore += checkConsisitencyOrPersonality(currentAnswerInt,desiredAnswer1,true, consistency); }
                 }
                 else if (question2.equals(questionKey)){
 
@@ -334,9 +355,9 @@ public class TestController {
 
                         System.out.println("First IF Does Match");
 
-                        returnedScore = checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer1,doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer2,doesMatch);
+                        returnedScore = checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer1,doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer2,doesMatch, consistency);
 
                         consistencyScore += returnedScore;
                     }
@@ -344,9 +365,9 @@ public class TestController {
                     else if (!doesMatch){
                         System.out.println("First IF Else");
 
-                        consistencyScore += checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer1, true);
-                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer2, true);
+                        consistencyScore += checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer1, true, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer2, true, consistency);
 
                     }
 
@@ -366,9 +387,9 @@ public class TestController {
 
                         System.out.println("Second IF Does Match");
 
-                        returnedScore = checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer1,doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer2,doesMatch);
+                        returnedScore = checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer1,doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer2,doesMatch, consistency);
 
                         consistencyScore += returnedScore;
                     }
@@ -377,9 +398,9 @@ public class TestController {
 
                         System.out.println("Second IF Does Not Match");
 
-                        consistencyScore += checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer1, true);
-                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer2, true);
+                        consistencyScore += checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer1, true, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer2, true, consistency);
 
                     }
 
@@ -726,7 +747,7 @@ public class TestController {
                 return 0;
         }
 
-        public int checkConsisitencyOrPersonality(int answer1, int answer2, Boolean doesMatch){
+        public int checkConsisitencyOrPersonality(int answer1, int answer2, Boolean doesMatch, Map<Integer,Integer> consistency){
 
 
 
@@ -752,13 +773,13 @@ public class TestController {
 
             else{
 
-                Map<Integer,Integer> consistency = new HashMap<>();
-
-                consistency.put(1,5);
-                consistency.put(2,4);
-                consistency.put(3,3);// this map is being created twice. Should refactor map into separate function to be only used once?
-                consistency.put(4,2);
-                consistency.put(5,1);
+//                Map<Integer,Integer> consistency = new HashMap<>();
+//
+//                consistency.put(1,5);
+//                consistency.put(2,4);
+//                consistency.put(3,3);// this map is being created twice. Should refactor map into separate function to be only used once?
+//                consistency.put(4,2);
+//                consistency.put(5,1);
 
                 int distanceBetweenAnswers = Math.abs(answer1-answer2);
 

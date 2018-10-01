@@ -11,10 +11,12 @@
 
 <div class="container">
     <h1 th:text="${title}">Default Title</h1>
-    <form method="post" style="max-width:600px;" th:object="${test}" id="myForm">
+    <form method="post" style="max-width:600px;" th:object="${test}" id="myForm" onsubmit="return myFunction()">
         <div th:each="question, iter : ${newList}" name="questions" class="list-group">
                 <h2 th:text="${question.key}" class="list-group-item-heading">User Display Name</h2>
-                <div class="form-group">
+                <span th:text="${error}" class="error"></span>
+
+            <div class="form-group">
                     <br></br>
                     <label th:for="desiredAnswer1">Desired Answer</label>
                     <br></br>
@@ -152,6 +154,12 @@
 </div>
 </body>
 <script type="text/javascript" th:src="@{/JS/form.js}" />
+
+<script>
+function myFunction() {
+    alert("Your test has been submitted. The employer will review your test and will contact you about your qualifications.");
+}
+</script>
 <footer th:replace="fragments :: footer"></footer>
 <!--<script type="text/javascript" th:inline="javascript">-->
 

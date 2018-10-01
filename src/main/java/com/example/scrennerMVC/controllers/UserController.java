@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.MessageDigest;
+import java.util.List;
 
 
 @Controller
@@ -36,21 +37,17 @@ public class UserController {
     public String processSignupForm(@ModelAttribute @Valid User newUser, Errors errors, Model model,
                                     HttpServletRequest request, HttpServletResponse response) {
 
-//        if (errors.hasErrors()){
-//            model.addAttribute("title", "Create an Account");
-//            return "signup";
-//        }
-
-        Iterable<User> users = userDao.findAll();
-
-        for (User user : users) {
+        for (User user : userDao.findByEmail(newUser.getEmail())) {
             if (user.getEmail().equals(newUser.getEmail())) {
                 model.addAttribute("title", "Create an Account");
                 model.addAttribute("message", "That username is already in use. Please choose another or go to the login page.");
                 return "signup";
             }
         }
-
+        if (errors.hasErrors()){
+            model.addAttribute("title", "Create an Account");
+            return "signup";
+        }
         if (newUser.getPassword().isEmpty()) {
             model.addAttribute("password", "Password field cannot be empty.");
             return "signup";
@@ -59,11 +56,8 @@ public class UserController {
             return "signup";
         }
 
-        //hash password, save user, and add user to session
-
         String userPassword = newUser.getPassword();
         newUser.setPwHash(hashPassword(userPassword));
-
 
         userDao.save(newUser);
         HttpSession session = request.getSession();
@@ -89,9 +83,8 @@ public class UserController {
                                    Model model, HttpServletRequest request, String password,
                                    HttpServletResponse response){
 
-        Iterable<User> users = userDao.findAll();
 
-        for (User user : users) {
+        for (User user : userDao.findByEmail(returningUser.getEmail())) {
             if (user.getEmail().equals(returningUser.getEmail())) {
                 if (user.getPwHash().equals(hashPassword(returningUser.getPassword()))) {
                     HttpSession session = request.getSession();

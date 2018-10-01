@@ -1,5 +1,7 @@
 function findChecked() {
 
+    var validate = true;
+
     const checkedRadios = [];
     const questionIds = []; //arrays
     const questionKeys = [];
@@ -15,8 +17,19 @@ function findChecked() {
         questionKeys.push(radio.dataset.questionKey);                                  //...question.id as questionId
 
         }
+    else{
+
+        validate = false;
+        break;
+
+    }
 
     });
+
+    if (!validate){
+        alert("Error Please answer all questions");
+    }
+
     answerInput.value = checkedRadios; // pass array of checked radios to answerInput for the id of "allAnswers" hidden input
     questionIdInput.value = questionIds;// same as above but for id="questionIds" hidden input
     questionKeysInput.value = questionKeys;
