@@ -37,34 +37,53 @@ public class UserController {
     public String processSignupForm(@ModelAttribute @Valid User newUser, Errors errors, Model model,
                                     HttpServletRequest request, HttpServletResponse response) {
 
-        for (User user : userDao.findByEmail(newUser.getEmail())) {
-            if (user.getEmail().equals(newUser.getEmail())) {
-                model.addAttribute("title", "Create an Account");
-                model.addAttribute("message", "That username is already in use. Please choose another or go to the login page.");
+//        if (errors.hasErrors()){
+//            model.addAttribute("title", "Create an Account");
+//            return "signup";
+//        }
+
+        // userDao.findAll();
+
+        List<User> users = userDao.findByEmail(newUser.getEmail());
+        if (users.isEmpty())
+        {
+            String userPassword = newUser.getPassword();
+            newUser.setPwHash(hashPassword(userPassword));
+
+
+            userDao.save(newUser);
+            HttpSession session = request.getSession();
+            session.setAttribute("loggedInUser", newUser);
+            response.encodeRedirectURL("profile/myprofile");
+
+            if (newUser.getPassword().isEmpty()) {
+                model.addAttribute("password", "Password field cannot be empty.");
+                return "signup";
+            } else if (newUser.getPassword().length() < 3) {
+                model.addAttribute("password", "Password must be between 3 and 15 characters.");
                 return "signup";
             }
+
+            return "redirect:/home";
         }
-        if (errors.hasErrors()){
+        else {
+
             model.addAttribute("title", "Create an Account");
-            return "signup";
-        }
-        if (newUser.getPassword().isEmpty()) {
-            model.addAttribute("password", "Password field cannot be empty.");
-            return "signup";
-        } else if (newUser.getPassword().length() < 3) {
-            model.addAttribute("password", "Password must be between 3 and 15 characters.");
+            model.addAttribute("message", "That username is already in use. Please choose another or go to the login page.");
             return "signup";
         }
 
-        String userPassword = newUser.getPassword();
-        newUser.setPwHash(hashPassword(userPassword));
+//        for (User user : userDao.findByEmail(newUser.getEmail())) {
+//            if (user.getEmail().equals(newUser.getEmail())) {
+//
+//            }
+//        }
 
-        userDao.save(newUser);
-        HttpSession session = request.getSession();
-        session.setAttribute("loggedInUser", newUser);
-        response.encodeRedirectURL("profile/myprofile");
 
-        return "redirect:/home";
+
+        //hash password, save user, and add user to session
+
+
     }
 
 
@@ -83,8 +102,12 @@ public class UserController {
                                    Model model, HttpServletRequest request, String password,
                                    HttpServletResponse response){
 
+        //Iterable<User> users = userDao.findAll();
 
-        for (User user : userDao.findByEmail(returningUser.getEmail())) {
+        List<User> users = userDao.findByEmail(returningUser.getEmail());
+
+
+        for (User user : users) {
             if (user.getEmail().equals(returningUser.getEmail())) {
                 if (user.getPwHash().equals(hashPassword(returningUser.getPassword()))) {
                     HttpSession session = request.getSession();
@@ -106,6 +129,7 @@ public class UserController {
 
         return "login";
     }
+
 
     @RequestMapping(value = "logout", method = RequestMethod.GET)
     public String logout(Model model, HttpServletRequest request) {

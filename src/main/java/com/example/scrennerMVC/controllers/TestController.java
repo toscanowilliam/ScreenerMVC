@@ -231,6 +231,8 @@ public class TestController {
 
         model.addAttribute("test",currentTest);
 
+        model.addAttribute("count", currentTest.getQuestions().size());
+
         if (hasErrors == true){
             model.addAttribute("error", "Please answer every question");
         }
@@ -255,6 +257,8 @@ public class TestController {
 
         if (allAnswers.length < currentTest.getQuestions().size()){
 
+
+
             return displayTakeTest(model, testId, session, true );
         }
 
@@ -274,7 +278,7 @@ public class TestController {
 
         consistency.put(1,5);
         consistency.put(2,4);
-        consistency.put(3,3);// this map is being created twice. Should refactor map into separate function to be only used once?
+        consistency.put(3,3);
         consistency.put(4,2);
         consistency.put(5,1);
 
