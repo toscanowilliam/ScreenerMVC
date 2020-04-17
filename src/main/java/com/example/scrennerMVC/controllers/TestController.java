@@ -108,6 +108,9 @@ public class TestController {
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
                                      @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session, @RequestParam String question2, @RequestParam Boolean matchingOpposite) {
 
+
+        //TODO: Need to check if user has selected an answer for question1 before checking whether question 2 has an answer
+
         if (question2.equals("")){
             question2 = null;
             desiredAnswer2 = null;
@@ -158,6 +161,48 @@ public class TestController {
         List<Question> listOfQuestions = currentTest.getQuestions();
         listOfQuestions.add(question);
         currentTest.setQuestions(listOfQuestions);
+
+        //Assigning the possible scores. All scores started out as null. You can't add to a null value
+
+
+        //TODO: Fix issue where possible personality score isn't being added to non-paired answers. It seems to add it if the first question is non-paired?
+        int possibleConsistencyScore = 0;
+        int possiblePersonalityScore = 0;
+
+        if (currentTest.getPossibleConsistencyScore() == null){
+
+        }
+        else{
+            possibleConsistencyScore = currentTest.getPossibleConsistencyScore(); // Else There is already a currenty possible consistency score
+
+        }
+        if (currentTest.getPossiblePersonalityScore() == null) {
+
+        }
+        else{
+            possiblePersonalityScore = currentTest.getPossiblePersonalityScore();
+        }
+
+        //Create Possible Personality Score
+        //A question with 2 sub-questions equals 10 personality points
+        //A question with only 1 question is only 5 personality points
+        //A question can only add consistency score if the question has a pair
+        //Each pair of questions can earn up to 5 consistency points
+
+
+
+        if (question2 == null) {
+            possiblePersonalityScore += 5;
+            possibleConsistencyScore += 0;
+        }
+
+        else{
+            possiblePersonalityScore += 10;
+            possibleConsistencyScore += 5;
+        }
+
+        currentTest.setPossiblePersonalityScore(possiblePersonalityScore);
+        currentTest.setPossibleConsistencyScore(possibleConsistencyScore);
 
         testDao.save(currentTest);
 
@@ -632,6 +677,8 @@ public class TestController {
             List<Test> myTests = new ArrayList<>();
 
 
+
+
             for(Test test : allTestsList){
                 if (test.getTestCreator().getId() == currentUser.getId()){
                     myTests.add(test);
@@ -657,8 +704,9 @@ public class TestController {
             List<User> testTakers = currentTest.getTestTakers();
 
             Map<Test,Score> currentTestScores = new HashMap<>();
-
             Map<User, Score> userScores = new HashMap<>();
+
+
 
 
             //TODO: Fix issue where it shuffles previous scores instead of simply displaying the most recent score by user.
@@ -687,6 +735,8 @@ public class TestController {
 
             Test currentTest = testDao.findOne(testId);
             User testTaker = userDao.findOne(testTakerId);
+
+
 
             Map<Question,Answer> userAnswers = testTaker.getAnswers();
 
