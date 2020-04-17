@@ -107,9 +107,16 @@ public class TestController {
     @RequestMapping(value = "/newquestion/{testId}", method = RequestMethod.POST)
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
                                      @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session, @RequestParam String question2, @RequestParam Boolean matchingOpposite) {
+        //TODO: Rewrite error functionality to display more specific messages and accurate messages.
+        //
+        //the if statement below fixes issue where it redirects to error code page when there is a second question
+        // but no first question AND now first answer
 
-
-        //TODO: Need to check if user has selected an answer for question1 before checking whether question 2 has an answer
+        if (question.getQuestion1() == "" || question.getQuestion1() == null || errors.hasErrors()){
+            model.addAttribute("title", "New Question");
+            model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
+            return "test/newQuestion";
+        }
 
         if (question2.equals("")){
             question2 = null;
@@ -158,52 +165,29 @@ public class TestController {
         questionDao.save(currentQuestionSet);
         currentQuestionSet.setTest(currentTest);
 
+        testDao.save(currentTest);
+
         List<Question> listOfQuestions = currentTest.getQuestions();
         listOfQuestions.add(question);
         currentTest.setQuestions(listOfQuestions);
+        testDao.save(currentTest);
 
-        //Assigning the possible scores. All scores started out as null. You can't add to a null value
-
-
-        //TODO: Fix issue where possible personality score isn't being added to non-paired answers. It seems to add it if the first question is non-paired?
         int possibleConsistencyScore = 0;
         int possiblePersonalityScore = 0;
 
-        if (currentTest.getPossibleConsistencyScore() == null){
+        for (Question currentQuestionInThisList : listOfQuestions){
 
-        }
-        else{
-            possibleConsistencyScore = currentTest.getPossibleConsistencyScore(); // Else There is already a currenty possible consistency score
-
-        }
-        if (currentTest.getPossiblePersonalityScore() == null) {
-
-        }
-        else{
-            possiblePersonalityScore = currentTest.getPossiblePersonalityScore();
+            if (currentQuestionInThisList.getDesiredAnswer2() == null){ //checking if the question has a pair
+                possiblePersonalityScore += 5;  // if question has no pair, then it's worth only up to 5 personality points
+            }
+            else{
+                possiblePersonalityScore += 10;
+                possibleConsistencyScore += 5;
+            }
         }
 
-        //Create Possible Personality Score
-        //A question with 2 sub-questions equals 10 personality points
-        //A question with only 1 question is only 5 personality points
-        //A question can only add consistency score if the question has a pair
-        //Each pair of questions can earn up to 5 consistency points
-
-
-
-        if (question2 == null) {
-            possiblePersonalityScore += 5;
-            possibleConsistencyScore += 0;
-        }
-
-        else{
-            possiblePersonalityScore += 10;
-            possibleConsistencyScore += 5;
-        }
-
-        currentTest.setPossiblePersonalityScore(possiblePersonalityScore);
         currentTest.setPossibleConsistencyScore(possibleConsistencyScore);
-
+        currentTest.setPossiblePersonalityScore(possiblePersonalityScore);
         testDao.save(currentTest);
 
 
