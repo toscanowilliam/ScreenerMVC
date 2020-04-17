@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.MapKeyColumn;
@@ -106,6 +107,16 @@ public class TestController {
     @RequestMapping(value = "/newquestion/{testId}", method = RequestMethod.POST)
     public String processAddQuestion(Model model, @ModelAttribute @Valid Question question, BindingResult errors, @PathVariable int testId,
                                      @RequestParam(required = false) Integer desiredAnswer1, @RequestParam(required = false) Integer desiredAnswer2, HttpSession session, @RequestParam String question2, @RequestParam Boolean matchingOpposite) {
+        //TODO: Rewrite error functionality to display more specific messages and accurate messages.
+        //
+        //the if statement below fixes issue where it redirects to error code page when there is a second question
+        // but no first question AND now first answer
+
+        if (question.getQuestion1() == "" || question.getQuestion1() == null || errors.hasErrors()){
+            model.addAttribute("title", "New Question");
+            model.addAttribute("isError", "Try again!! Please look over possible mistakes in this question.");
+            return "test/newQuestion";
+        }
 
         if (question2.equals("")){
             question2 = null;
@@ -154,10 +165,29 @@ public class TestController {
         questionDao.save(currentQuestionSet);
         currentQuestionSet.setTest(currentTest);
 
+        testDao.save(currentTest);
+
         List<Question> listOfQuestions = currentTest.getQuestions();
         listOfQuestions.add(question);
         currentTest.setQuestions(listOfQuestions);
+        testDao.save(currentTest);
 
+        int possibleConsistencyScore = 0;
+        int possiblePersonalityScore = 0;
+
+        for (Question currentQuestionInThisList : listOfQuestions){
+
+            if (currentQuestionInThisList.getDesiredAnswer2() == null){ //checking if the question has a pair
+                possiblePersonalityScore += 5;  // if question has no pair, then it's worth only up to 5 personality points
+            }
+            else{
+                possiblePersonalityScore += 10;
+                possibleConsistencyScore += 5;
+            }
+        }
+
+        currentTest.setPossibleConsistencyScore(possibleConsistencyScore);
+        currentTest.setPossiblePersonalityScore(possiblePersonalityScore);
         testDao.save(currentTest);
 
 
@@ -169,7 +199,7 @@ public class TestController {
 
 
     @RequestMapping(value = "taketest/{testId}", method = RequestMethod.GET)
-    public String displayTakeTest(Model model, @PathVariable int testId, HttpSession session) {
+    public String displayTakeTest(Model model, @PathVariable int testId, HttpSession session, boolean hasErrors) {
 
         Test currentTest = testDao.findOne(testId);
 
@@ -230,6 +260,12 @@ public class TestController {
 
         model.addAttribute("test",currentTest);
 
+        model.addAttribute("count", currentTest.getQuestions().size());
+
+        if (hasErrors == true){
+            model.addAttribute("error", "Please answer every question");
+        }
+
 //        model.addAttribute("question1s",question1s);
 //        model.addAttribute("question2s",question2s);
 
@@ -243,8 +279,18 @@ public class TestController {
     public String processTakeTest(Model model, @PathVariable int testId, HttpSession session, @RequestParam(name="allAnswers") int allAnswers[],
                                   @RequestParam(name="questionIds") int questionIds[], @RequestParam(name="questionKeys") String questionKeys[]){
 
+
+
         User currentUser = (User) session.getAttribute("loggedInUser");
         Test currentTest = testDao.findOne(testId);
+
+        if (allAnswers.length < currentTest.getQuestions().size()){
+
+
+
+            return displayTakeTest(model, testId, session, true );
+        }
+
         List<User> testTakers = currentTest.getTestTakers();
         testTakers.add(currentUser);
 
@@ -256,6 +302,14 @@ public class TestController {
         Map<Question,Answer> answerMap = new HashMap<>();
 
         Map<Integer, Integer> questionIdIndex = new HashMap<>(); //questionId, index
+
+        Map<Integer,Integer> consistency = new HashMap<>();
+
+        consistency.put(1,5);
+        consistency.put(2,4);
+        consistency.put(3,3);
+        consistency.put(4,2);
+        consistency.put(5,1);
 
         int personalityScore = 0;
         int consistencyScore = 0;
@@ -307,7 +361,7 @@ public class TestController {
                     answerDao.save(answer);
                     answerMap.put(currentQuestion,answer);
 
-                    if (!hasMatch){ personalityScore += checkConsisitencyOrPersonality(currentAnswerInt,desiredAnswer1,true); }
+                    if (!hasMatch){ personalityScore += checkConsisitencyOrPersonality(currentAnswerInt,desiredAnswer1,true, consistency); }
                 }
                 else if (question2.equals(questionKey)){
 
@@ -334,9 +388,9 @@ public class TestController {
 
                         System.out.println("First IF Does Match");
 
-                        returnedScore = checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer1,doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer2,doesMatch);
+                        returnedScore = checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer1,doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer2,doesMatch, consistency);
 
                         consistencyScore += returnedScore;
                     }
@@ -344,9 +398,9 @@ public class TestController {
                     else if (!doesMatch){
                         System.out.println("First IF Else");
 
-                        consistencyScore += checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer1, true);
-                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer2, true);
+                        consistencyScore += checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer1, true, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer2, true, consistency);
 
                     }
 
@@ -366,9 +420,9 @@ public class TestController {
 
                         System.out.println("Second IF Does Match");
 
-                        returnedScore = checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer1,doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer2,doesMatch);
+                        returnedScore = checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer1,doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer2,doesMatch, consistency);
 
                         consistencyScore += returnedScore;
                     }
@@ -377,9 +431,9 @@ public class TestController {
 
                         System.out.println("Second IF Does Not Match");
 
-                        consistencyScore += checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch);
-                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer1, true);
-                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer2, true);
+                        consistencyScore += checkConsisitencyOrPersonality(firstAnswer, secondAnswer, doesMatch, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(secondAnswer,desiredAnswer1, true, consistency);
+                        personalityScore += checkConsisitencyOrPersonality(firstAnswer,desiredAnswer2, true, consistency);
 
                     }
 
@@ -607,6 +661,8 @@ public class TestController {
             List<Test> myTests = new ArrayList<>();
 
 
+
+
             for(Test test : allTestsList){
                 if (test.getTestCreator().getId() == currentUser.getId()){
                     myTests.add(test);
@@ -632,8 +688,9 @@ public class TestController {
             List<User> testTakers = currentTest.getTestTakers();
 
             Map<Test,Score> currentTestScores = new HashMap<>();
-
             Map<User, Score> userScores = new HashMap<>();
+
+
 
 
             //TODO: Fix issue where it shuffles previous scores instead of simply displaying the most recent score by user.
@@ -662,6 +719,8 @@ public class TestController {
 
             Test currentTest = testDao.findOne(testId);
             User testTaker = userDao.findOne(testTakerId);
+
+
 
             Map<Question,Answer> userAnswers = testTaker.getAnswers();
 
@@ -726,7 +785,7 @@ public class TestController {
                 return 0;
         }
 
-        public int checkConsisitencyOrPersonality(int answer1, int answer2, Boolean doesMatch){
+        public int checkConsisitencyOrPersonality(int answer1, int answer2, Boolean doesMatch, Map<Integer,Integer> consistency){
 
 
 
@@ -752,13 +811,13 @@ public class TestController {
 
             else{
 
-                Map<Integer,Integer> consistency = new HashMap<>();
-
-                consistency.put(1,5);
-                consistency.put(2,4);
-                consistency.put(3,3);// this map is being created twice. Should refactor map into separate function to be only used once?
-                consistency.put(4,2);
-                consistency.put(5,1);
+//                Map<Integer,Integer> consistency = new HashMap<>();
+//
+//                consistency.put(1,5);
+//                consistency.put(2,4);
+//                consistency.put(3,3);// this map is being created twice. Should refactor map into separate function to be only used once?
+//                consistency.put(4,2);
+//                consistency.put(5,1);
 
                 int distanceBetweenAnswers = Math.abs(answer1-answer2);
 
