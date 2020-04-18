@@ -49,7 +49,7 @@ public class TestController {
         List<Test> tests = new ArrayList<>();
 
         for (Test test : testDao.findAll()){
-            if  (!test.getTestTakers().contains(userDao.findOne(currentUser.getId()))){
+            if  (!test.getTestTakers().contains(userDao.findOne(currentUser.getId()))){ //if the current logged in user did not take the test?
                 tests.add(test);
             }
         }
@@ -200,6 +200,12 @@ public class TestController {
 
     @RequestMapping(value = "taketest/{testId}", method = RequestMethod.GET)
     public String displayTakeTest(Model model, @PathVariable int testId, HttpSession session, boolean hasErrors) {
+
+
+        //TODO: Fix issue where question doesn't display if it's a test with only one question after it was
+        //submitted with the "finish test" instead of the "add question" and then "finish test".
+        // Also,
+        //fix issue where Possible scores get set as NULL if it's only one question
 
         Test currentTest = testDao.findOne(testId);
 
@@ -693,7 +699,6 @@ public class TestController {
 
 
 
-            //TODO: Fix issue where it shuffles previous scores instead of simply displaying the most recent score by user.
             // Since it's a HASHMAP, shouldn't there not be duplicate keys?
 
 
